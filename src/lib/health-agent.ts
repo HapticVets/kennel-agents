@@ -9,6 +9,8 @@ import type {
   Severity
 } from "@/types/health";
 
+const seoDebugEnabled = process.env.KENNEL_HEALTH_DEBUG === "true";
+
 function getCategory(type: HealthFinding["type"]): FindingCategory {
   switch (type) {
     case "homepage_availability":
@@ -73,6 +75,8 @@ function normalizeUrl(href: string, baseUrl: string): string | null {
 async function fetchPage(url: string): Promise<{
   status: number | null;
   html: string | null;
+  finalUrl?: string;
+  contentType?: string;
   error?: string;
 }> {
   try {
@@ -84,11 +88,58 @@ async function fetchPage(url: string): Promise<{
     });
 
     const contentType = response.headers.get("content-type") ?? "";
-    const html = contentType.includes("text/html") ? await response.text() : null;
+    let html = contentType.includes("text/html") ? await response.text() : null;
+    let finalUrl = response.url;
+    let finalStatus = response.status;
+    let finalContentType = contentType;
+
+    const redirectTarget = html ? detectJavaScriptRedirect(html, finalUrl) : null;
+
+    if (redirectTarget) {
+      if (seoDebugEnabled) {
+        console.log("[KennelHealthAgent][Redirect]", {
+          requestedUrl: url,
+          detectedRedirectTarget: redirectTarget
+        });
+      }
+
+      const redirectedResponse = await fetch(redirectTarget, {
+        headers: {
+          "user-agent": "KennelHealthAgent/0.1"
+        },
+        cache: "no-store"
+      });
+
+      finalContentType = redirectedResponse.headers.get("content-type") ?? "";
+      html = finalContentType.includes("text/html")
+        ? await redirectedResponse.text()
+        : null;
+      finalUrl = redirectedResponse.url;
+      finalStatus = redirectedResponse.status;
+
+      if (seoDebugEnabled) {
+        console.log("[KennelHealthAgent][RedirectFetch]", {
+          redirectedFetchUrl: finalUrl,
+          redirectedFetchStatus: finalStatus
+        });
+      }
+    }
+
+    if (seoDebugEnabled) {
+      console.log("[KennelHealthAgent][Fetch]", {
+        requestedUrl: url,
+        finalUrl,
+        status: finalStatus,
+        contentType: finalContentType,
+        bodyPreview: html?.slice(0, 500) ?? ""
+      });
+    }
 
     return {
-      status: response.status,
-      html
+      status: finalStatus,
+      html,
+      finalUrl,
+      contentType: finalContentType
     };
   } catch (error) {
     return {
@@ -113,6 +164,7 @@ async function scanPage(url: string): Promise<PageScanResult> {
   }
 
   const $ = cheerio.load(html);
+  const seoFields = extractSeoFields(html, $);
 
   const internalLinks = $("a[href]")
     .map((_, element) => normalizeUrl($(element).attr("href") ?? "", url))
@@ -131,11 +183,96 @@ async function scanPage(url: string): Promise<PageScanResult> {
     url,
     status,
     available: true,
-    title: $("title").first().text().trim(),
-    metaDescription: $('meta[name="description"]').attr("content")?.trim(),
+    title: seoFields.title,
+    metaDescription: seoFields.metaDescription,
     internalLinks: Array.from(new Set(internalLinks)),
     imageUrls
   };
+}
+
+function detectJavaScriptRedirect(html: string, baseUrl: string): string | null {
+  const redirectPatterns = [
+    /window\.location\.href\s*=\s*["']([^"']+)["']/i,
+    /window\.location\s*=\s*["']([^"']+)["']/i,
+    /location\.href\s*=\s*["']([^"']+)["']/i
+  ];
+
+  for (const pattern of redirectPatterns) {
+    const match = html.match(pattern);
+
+    if (!match?.[1]) {
+      continue;
+    }
+
+    try {
+      return new URL(match[1], baseUrl).toString();
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+function extractSeoFields(
+  html: string,
+  $: cheerio.CheerioAPI
+): { title?: string; metaDescription?: string } {
+  // First try DOM-based extraction, then fall back to raw HTML parsing when selectors miss.
+  const domTitle = $("title").first().text().trim();
+  const domMetaDescription = $('meta[name="description" i]')
+    .first()
+    .attr("content")
+    ?.trim();
+
+  const title = domTitle || extractTitleFromHtml(html);
+  const metaDescription = domMetaDescription || extractMetaDescriptionFromHtml(html);
+
+  if (seoDebugEnabled) {
+    console.log("[KennelHealthAgent][SEO]", {
+      titleFound: Boolean(title),
+      metaDescriptionFound: Boolean(metaDescription),
+      title,
+      metaDescription
+    });
+  }
+
+  return {
+    title: title || undefined,
+    metaDescription: metaDescription || undefined
+  };
+}
+
+function extractTitleFromHtml(html: string): string {
+  const titleMatch = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+  return titleMatch?.[1]?.replace(/\s+/g, " ").trim() ?? "";
+}
+
+function extractMetaDescriptionFromHtml(html: string): string {
+  const metaTagPattern = /<meta\b[^>]*>/gi;
+  const metaTags = html.match(metaTagPattern) ?? [];
+
+  for (const tag of metaTags) {
+    const nameMatch =
+      tag.match(/\bname\s*=\s*"([^"]*)"/i) ??
+      tag.match(/\bname\s*=\s*'([^']*)'/i) ??
+      tag.match(/\bname\s*=\s*([^\s"'=/>]+)/i);
+
+    if (!nameMatch || nameMatch[1].trim().toLowerCase() !== "description") {
+      continue;
+    }
+
+    const contentMatch =
+      tag.match(/\bcontent\s*=\s*"([^"]*)"/i) ??
+      tag.match(/\bcontent\s*=\s*'([^']*)'/i) ??
+      tag.match(/\bcontent\s*=\s*([^\s"'=/>]+)/i);
+
+    if (contentMatch?.[1]) {
+      return contentMatch[1].replace(/\s+/g, " ").trim();
+    }
+  }
+
+  return "";
 }
 
 async function checkImageAvailability(

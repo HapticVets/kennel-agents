@@ -39,6 +39,18 @@ export function AdminNav({ currentPath }: { currentPath: string }) {
       >
         Apply changes
       </Link>
+      <Link
+        className={`admin-nav-link ${currentPath === "/admin/merge-changes" ? "admin-nav-link-active" : ""}`}
+        href="/admin/merge-changes"
+      >
+        Merge changes
+      </Link>
+      <Link
+        className={`admin-nav-link ${currentPath === "/admin/verification" ? "admin-nav-link-active" : ""}`}
+        href="/admin/verification"
+      >
+        Verification
+      </Link>
     </nav>
   );
 }

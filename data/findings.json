@@ -1,31 +1,39 @@
 {
   "latest": {
-    "checkedAt": "2026-04-08T19:12:20.862Z",
+    "checkedAt": "2026-04-08T23:02:21.663Z",
     "baseUrl": "https://patriotk9kennel.com",
     "findings": [
       {
-        "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
-        "severity": "medium",
-        "category": "seo",
-        "type": "missing_seo_metadata",
+        "id": "homepage_availability-https://patriotk9kennel.com-Homepage-is-unavailable.",
+        "severity": "high",
+        "category": "availability",
+        "type": "homepage_availability",
         "pageUrl": "https://patriotk9kennel.com",
-        "message": "Page title is missing.",
-        "checkedAt": "2026-04-08T19:12:20.862Z"
-      },
-      {
-        "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
-        "severity": "low",
-        "category": "seo",
-        "type": "missing_seo_metadata",
-        "pageUrl": "https://patriotk9kennel.com",
-        "message": "Meta description is missing.",
-        "checkedAt": "2026-04-08T19:12:20.862Z"
+        "message": "Homepage is unavailable.",
+        "details": "Received HTTP 403.",
+        "checkedAt": "2026-04-08T23:02:21.663Z"
       }
     ]
   },
   "history": [
     {
-      "checkedAt": "2026-04-08T19:12:20.862Z",
+      "checkedAt": "2026-04-08T23:02:21.663Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "homepage_availability-https://patriotk9kennel.com-Homepage-is-unavailable.",
+          "severity": "high",
+          "category": "availability",
+          "type": "homepage_availability",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Homepage is unavailable.",
+          "details": "Received HTTP 403.",
+          "checkedAt": "2026-04-08T23:02:21.663Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:59:10.755Z",
       "baseUrl": "https://patriotk9kennel.com",
       "findings": [
         {
@@ -35,7 +43,7 @@
           "type": "missing_seo_metadata",
           "pageUrl": "https://patriotk9kennel.com",
           "message": "Page title is missing.",
-          "checkedAt": "2026-04-08T19:12:20.862Z"
+          "checkedAt": "2026-04-08T22:59:10.755Z"
         },
         {
           "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
@@ -44,7 +52,199 @@
           "type": "missing_seo_metadata",
           "pageUrl": "https://patriotk9kennel.com",
           "message": "Meta description is missing.",
-          "checkedAt": "2026-04-08T19:12:20.862Z"
+          "checkedAt": "2026-04-08T22:59:10.755Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:54:07.461Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:54:07.461Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:54:07.461Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:53:24.689Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:53:24.689Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:53:24.689Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:53:22.102Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:53:22.102Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:53:22.102Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:49:14.483Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:49:14.483Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:49:14.483Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:44:45.168Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:44:45.168Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:44:45.168Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:44:14.600Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:44:14.600Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:44:14.600Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:43:45.403Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:43:45.403Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:43:45.403Z"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-04-08T22:43:42.455Z",
+      "baseUrl": "https://patriotk9kennel.com",
+      "findings": [
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
+          "severity": "medium",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Page title is missing.",
+          "checkedAt": "2026-04-08T22:43:42.455Z"
+        },
+        {
+          "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
+          "severity": "low",
+          "category": "seo",
+          "type": "missing_seo_metadata",
+          "pageUrl": "https://patriotk9kennel.com",
+          "message": "Meta description is missing.",
+          "checkedAt": "2026-04-08T22:43:42.455Z"
         }
       ]
     }

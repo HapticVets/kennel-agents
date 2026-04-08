@@ -327,6 +327,28 @@ button {
   color: var(--high);
 }
 
+.badge-open {
+  background: rgba(95, 108, 133, 0.12);
+  color: var(--muted);
+}
+
+.badge-approved,
+.badge-verified_resolved {
+  background: rgba(42, 122, 66, 0.12);
+  color: var(--low);
+}
+
+.badge-applied,
+.badge-merged {
+  background: rgba(31, 94, 255, 0.12);
+  color: var(--accent);
+}
+
+.badge-still_failing {
+  background: rgba(192, 53, 43, 0.12);
+  color: var(--high);
+}
+
 .badge-info {
   background: rgba(31, 94, 255, 0.12);
   color: var(--accent);

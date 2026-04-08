@@ -9,7 +9,10 @@ import type {
   ConversionInsightReport,
   HealthReport,
   HealthReportStore,
+  MergeResult,
   ProposedFixReport
+  ,
+  VerificationReport
 } from "@/types/health";
 
 const dataDirectory = path.join(process.cwd(), "data");
@@ -19,6 +22,8 @@ const contentDraftsFilePath = path.join(dataDirectory, "content-drafts.json");
 const conversionInsightsFilePath = path.join(dataDirectory, "conversion-insights.json");
 const approvalsFilePath = path.join(dataDirectory, "approvals.json");
 const applyResultsFilePath = path.join(dataDirectory, "apply-results.json");
+const mergeResultsFilePath = path.join(dataDirectory, "merge-results.json");
+const verificationFilePath = path.join(dataDirectory, "verification.json");
 
 const emptyReport = (): HealthReport => ({
   checkedAt: "",
@@ -49,6 +54,11 @@ const emptyConversionInsightReport = (): ConversionInsightReport => ({
 
 const emptyApprovalStates = (): ApprovalState[] => [];
 const emptyApplyResults = (): ApplyResult[] => [];
+const emptyMergeResults = (): MergeResult[] => [];
+const emptyVerificationReport = (): VerificationReport => ({
+  generatedAt: "",
+  records: []
+});
 
 function normalizeStore(data: unknown): HealthReportStore {
   // This fallback keeps older single-report JSON files compatible.
@@ -183,4 +193,40 @@ export async function writeApplyResults(
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(applyResultsFilePath, JSON.stringify(results, null, 2), "utf8");
   return results;
+}
+
+export async function readMergeResults(): Promise<MergeResult[]> {
+  try {
+    const fileContents = await readFile(mergeResultsFilePath, "utf8");
+    return JSON.parse(fileContents) as MergeResult[];
+  } catch {
+    return emptyMergeResults();
+  }
+}
+
+export async function writeMergeResults(
+  results: MergeResult[]
+): Promise<MergeResult[]> {
+  // Merge results are stored separately so preview/apply decisions remain auditable.
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(mergeResultsFilePath, JSON.stringify(results, null, 2), "utf8");
+  return results;
+}
+
+export async function readVerificationReport(): Promise<VerificationReport> {
+  try {
+    const fileContents = await readFile(verificationFilePath, "utf8");
+    return JSON.parse(fileContents) as VerificationReport;
+  } catch {
+    return emptyVerificationReport();
+  }
+}
+
+export async function writeVerificationReport(
+  report: VerificationReport
+): Promise<VerificationReport> {
+  // Verification records are stored separately so repeated checks preserve their own lifecycle history.
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(verificationFilePath, JSON.stringify(report, null, 2), "utf8");
+  return report;
 }

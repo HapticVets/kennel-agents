@@ -1,4 +1,59 @@
 {
-  "generatedAt": "",
-  "insights": []
+  "generatedAt": "2026-04-08T21:25:30.883Z",
+  "insights": [
+    {
+      "id": "messaging-https://patriotk9kennel.com-homepage-messaging-appears-thin-or-lacks-a-clear-structure-at-the-top-of-the-page.",
+      "category": "messaging",
+      "issueOrObservation": "Homepage messaging appears thin or lacks a clear structure at the top of the page.",
+      "severity": "high",
+      "pageUrl": "https://patriotk9kennel.com",
+      "recommendation": "Lead with a stronger headline and supporting copy that quickly explains what the kennel offers.",
+      "improvementExample": "Example improvement: 'Patriot K9 Kennel offers practical dog training, puppy guidance, and structured support for owners who want confident, reliable dogs.'"
+    },
+    {
+      "id": "cta-https://patriotk9kennel.com-homepage-does-not-appear-to-present-a-strong-visible-call-to-action.",
+      "category": "cta",
+      "issueOrObservation": "Homepage does not appear to present a strong visible call to action.",
+      "severity": "high",
+      "pageUrl": "https://patriotk9kennel.com",
+      "recommendation": "Add a primary button near the top of the homepage that points visitors toward inquiry or services.",
+      "improvementExample": "Example improvement: add a top-of-page CTA such as 'Request Training Info' or 'Ask About Puppies'."
+    },
+    {
+      "id": "flow-https://patriotk9kennel.com-homepage-structure-may-be-too-shallow-to-guide-visitors-from-introduction-to-action.",
+      "category": "flow",
+      "issueOrObservation": "Homepage structure may be too shallow to guide visitors from introduction to action.",
+      "severity": "medium",
+      "pageUrl": "https://patriotk9kennel.com",
+      "recommendation": "Use a clearer content flow: hero, services, trust signals, FAQ, then CTA.",
+      "improvementExample": "Example improvement: add a services section and a testimonial block before the main contact CTA."
+    },
+    {
+      "id": "trust-https://patriotk9kennel.com-the-sampled-pages-show-weak-visible-trust-signals-such-as-testimonials--credentials--or-experience-markers.",
+      "category": "trust",
+      "issueOrObservation": "The sampled pages show weak visible trust signals such as testimonials, credentials, or experience markers.",
+      "severity": "high",
+      "pageUrl": "https://patriotk9kennel.com",
+      "recommendation": "Add social proof and credibility cues to reassure first-time visitors.",
+      "improvementExample": "Example improvement: include a testimonials block, years of experience statement, or a short credibility summary."
+    },
+    {
+      "id": "services-https://patriotk9kennel.com-service-categories-are-not-clearly-reinforced-across-the-sampled-pages.",
+      "category": "services",
+      "issueOrObservation": "Service categories are not clearly reinforced across the sampled pages.",
+      "severity": "high",
+      "pageUrl": "https://patriotk9kennel.com",
+      "recommendation": "Name the main service lines clearly so visitors can immediately see whether you offer training, puppies, or related support.",
+      "improvementExample": "Example improvement: add homepage sections titled 'Dog Training', 'Available Puppies', and 'How to Get Started'."
+    },
+    {
+      "id": "drop_off-https://patriotk9kennel.com-some-internal-pages-may-create-drop-off-risk-because-they-lack-visible-next-step-prompts.",
+      "category": "drop_off",
+      "issueOrObservation": "Some internal pages may create drop-off risk because they lack visible next-step prompts.",
+      "severity": "medium",
+      "pageUrl": "https://patriotk9kennel.com",
+      "recommendation": "Add a relevant CTA at the end of informational sections so visitors are not left without direction.",
+      "improvementExample": "Example improvement: end service or FAQ sections with a prompt like 'Contact us to discuss the right fit for your dog.'"
+    }
+  ]
 }

@@ -1,0 +1,20 @@
+[
+  {
+    "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.-draft-fix",
+    "sourceType": "proposed_fix",
+    "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\app\\layout.tsx",
+    "status": "applied",
+    "diffPreview": "--- Existing\nexport const metadata: Metadata = {\n  title: \"Das Müller German Shepherds\",\n  description:\n    \"Purpose-bred German Shepherds, structured placement, and a veteran-driven mission.\",\n  openGraph: {\n    title: \"Das Müller German Shepherds\",\n    description:\n      \"Purpose-bred German Shepherds, structured placement, and a veteran-driven mission.\",\n    url: \"https://patriotk9kennel.com\",\n    siteName: \"Das Müller German Shepherds\",\n    images: [\n      {\n        url: \"/share-image.jpg\",\n        width: 1200,\n        height: 630,\n        alt: \"Das Müller German Shepherds\",\n      },\n    ],\n    locale: \"en_US\",\n    type: \"website\",\n  },\n  twitter: {\n    card: \"summary_large_image\",\n    title: \"Das Müller German Shepherds\",\n    description:\n      \"Purpose-bred German Shepherds, structured placement, and a veteran-driven mission.\",\n    images: [\"/share-image.jpg\"],\n  },\n  icons: {\n    icon: \"/favicon.ico\",\n  },\n};\n\n+++ Proposed\ntitle: \"Das Muller German Shepherds | Structured Training and Puppy Placement\"\nopenGraph.title: \"Das Muller German Shepherds | Structured Training and Puppy Placement\"\ntwitter.title: \"Das Muller German Shepherds | Structured Training and Puppy Placement\"",
+    "updatedAt": "2026-04-08T22:26:47.103Z",
+    "message": "Merge was written into the real site file."
+  },
+  {
+    "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.-draft-fix",
+    "sourceType": "proposed_fix",
+    "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\app\\layout.tsx",
+    "status": "applied",
+    "diffPreview": "--- Existing\nexport const metadata: Metadata = {\n  title: \"Das Muller German Shepherds | Structured Training and Puppy Placement\",\n  description:\n    \"Purpose-bred German Shepherds, structured placement, and a veteran-driven mission.\",\n  openGraph: {\n    title: \"Das Muller German Shepherds | Structured Training and Puppy Placement\",\n    description:\n      \"Purpose-bred German Shepherds, structured placement, and a veteran-driven mission.\",\n    url: \"https://patriotk9kennel.com\",\n    siteName: \"Das Müller German Shepherds\",\n    images: [\n      {\n        url: \"/share-image.jpg\",\n        width: 1200,\n        height: 630,\n        alt: \"Das Müller German Shepherds\",\n      },\n    ],\n    locale: \"en_US\",\n    type: \"website\",\n  },\n  twitter: {\n    card: \"summary_large_image\",\n    title: \"Das Muller German Shepherds | Structured Training and Puppy Placement\",\n    description:\n      \"Purpose-bred German Shepherds, structured placement, and a veteran-driven mission.\",\n    images: [\"/share-image.jpg\"],\n  },\n  icons: {\n    icon: \"/favicon.ico\",\n  },\n};\n\n+++ Proposed\ndescription: \"Purpose-bred German Shepherds, structured puppy placement, and training support for serious homes.\"\nopenGraph.description: same updated copy\ntwitter.description: same updated copy",
+    "updatedAt": "2026-04-08T22:26:53.476Z",
+    "message": "Merge was written into the real site file."
+  }
+]

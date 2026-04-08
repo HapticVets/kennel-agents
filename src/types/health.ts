@@ -170,3 +170,62 @@ export interface ApplyQueueReport {
   generatedAt: string;
   items: ApplyQueueItem[];
 }
+
+export type MergeStatus = "ready" | "applied" | "skipped" | "failed";
+
+export interface MergeQueueItem {
+  itemId: string;
+  sourceType: "proposed_fix" | "content_draft";
+  title: string;
+  stagedFile: string;
+  targetFile: string;
+  changeSummary: string;
+  diffPreview: string;
+  status: MergeStatus;
+  message?: string;
+}
+
+export interface MergeResult {
+  itemId: string;
+  sourceType: "proposed_fix" | "content_draft";
+  targetFile: string;
+  status: MergeStatus;
+  diffPreview: string;
+  updatedAt: string;
+  message?: string;
+}
+
+export interface MergeQueueReport {
+  generatedAt: string;
+  items: MergeQueueItem[];
+}
+
+export type VerificationStatus =
+  | "open"
+  | "approved"
+  | "applied"
+  | "merged"
+  | "verified_resolved"
+  | "still_failing";
+
+export interface VerificationHistoryEntry {
+  status: VerificationStatus;
+  checkedAt: string;
+  notes: string;
+}
+
+export interface VerificationRecord {
+  findingId: string;
+  findingTitle: string;
+  pageUrl: string;
+  severity: Severity;
+  status: VerificationStatus;
+  lastCheckedAt: string;
+  notes: string;
+  history: VerificationHistoryEntry[];
+}
+
+export interface VerificationReport {
+  generatedAt: string;
+  records: VerificationRecord[];
+}

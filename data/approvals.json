@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.-draft-fix",
+    "sourceType": "proposed_fix",
+    "status": "approved",
+    "updatedAt": "2026-04-08T22:31:55.028Z"
+  },
+  {
+    "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.-draft-fix",
+    "sourceType": "proposed_fix",
+    "status": "approved",
+    "updatedAt": "2026-04-08T22:31:56.791Z"
+  },
+  {
+    "itemId": "homepage_hero-homepage-hero:-trusted-k9-training-and-quality-puppies",
+    "sourceType": "content_draft",
+    "status": "pending",
+    "updatedAt": "2026-04-08T22:32:32.145Z"
+  }
+]

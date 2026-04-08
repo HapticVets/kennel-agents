@@ -42,23 +42,38 @@ function getExistingResult(
   );
 }
 
+function sanitizePathSegment(value: string): string {
+  return value
+    .replace(/^https?:\/\//, "")
+    .replace(/[/:.]/g, "_")
+    .replace(/[^a-zA-Z0-9_-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/_+/g, "_")
+    .replace(/^[_-]+|[_-]+$/g, "")
+    .toLowerCase();
+}
+
 function buildProposedFixTargetFile(fix: ProposedFix): string {
+  const safeFileName = sanitizePathSegment(fix.id);
+
   return path.join(
     TARGET_SITE_PATH,
     "src",
     "agent-applied",
     "proposed-fixes",
-    `${fix.id}.md`
+    `${safeFileName}.md`
   );
 }
 
 function buildContentDraftTargetFile(draft: ContentDraft): string {
+  const safeFileName = sanitizePathSegment(draft.id);
+
   return path.join(
     TARGET_SITE_PATH,
     "src",
     "agent-applied",
     "content-drafts",
-    `${draft.id}.md`
+    `${safeFileName}.md`
   );
 }
 
