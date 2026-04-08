@@ -3,6 +3,7 @@ import path from "path";
 
 import { MAX_SCAN_HISTORY } from "@/lib/config";
 import type {
+  ApprovalState,
   ContentDraftReport,
   ConversionInsightReport,
   HealthReport,
@@ -15,6 +16,7 @@ const findingsFilePath = path.join(dataDirectory, "findings.json");
 const proposedFixesFilePath = path.join(dataDirectory, "proposed-fixes.json");
 const contentDraftsFilePath = path.join(dataDirectory, "content-drafts.json");
 const conversionInsightsFilePath = path.join(dataDirectory, "conversion-insights.json");
+const approvalsFilePath = path.join(dataDirectory, "approvals.json");
 
 const emptyReport = (): HealthReport => ({
   checkedAt: "",
@@ -42,6 +44,8 @@ const emptyConversionInsightReport = (): ConversionInsightReport => ({
   generatedAt: "",
   insights: []
 });
+
+const emptyApprovalStates = (): ApprovalState[] => [];
 
 function normalizeStore(data: unknown): HealthReportStore {
   // This fallback keeps older single-report JSON files compatible.
@@ -140,4 +144,22 @@ export async function writeConversionInsightReport(
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(conversionInsightsFilePath, JSON.stringify(report, null, 2), "utf8");
   return report;
+}
+
+export async function readApprovalStates(): Promise<ApprovalState[]> {
+  try {
+    const fileContents = await readFile(approvalsFilePath, "utf8");
+    return JSON.parse(fileContents) as ApprovalState[];
+  } catch {
+    return emptyApprovalStates();
+  }
+}
+
+export async function writeApprovalStates(
+  states: ApprovalState[]
+): Promise<ApprovalState[]> {
+  // Approval state is kept separate so review decisions do not mutate source draft files.
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(approvalsFilePath, JSON.stringify(states, null, 2), "utf8");
+  return states;
 }

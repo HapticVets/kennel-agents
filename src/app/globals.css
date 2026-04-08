@@ -114,6 +114,21 @@ button {
   cursor: progress;
 }
 
+.approval-button {
+  min-width: 0;
+  padding: 10px 14px;
+}
+
+.approval-button-secondary {
+  background: #eef3fb;
+  color: var(--text);
+}
+
+.approval-button-active {
+  background: var(--accent);
+  color: white;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -223,6 +238,24 @@ button {
   gap: 8px;
 }
 
+.approval-status-groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.approval-status-column {
+  display: grid;
+  gap: 12px;
+}
+
+.approval-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
 .finding-topline {
   display: flex;
   align-items: center;
@@ -261,6 +294,21 @@ button {
   color: var(--low);
 }
 
+.badge-pending {
+  background: rgba(95, 108, 133, 0.12);
+  color: var(--muted);
+}
+
+.badge-approved {
+  background: rgba(42, 122, 66, 0.12);
+  color: var(--low);
+}
+
+.badge-rejected {
+  background: rgba(192, 53, 43, 0.12);
+  color: var(--high);
+}
+
 .badge-info {
   background: rgba(31, 94, 255, 0.12);
   color: var(--accent);
@@ -281,6 +329,10 @@ button {
   }
 
   .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .approval-status-groups {
     grid-template-columns: 1fr;
   }
 }

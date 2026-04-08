@@ -110,3 +110,33 @@ export interface ConversionInsightReport {
   generatedAt: string;
   insights: ConversionInsight[];
 }
+
+export type ApprovalSourceType =
+  | "proposed_fix"
+  | "content_draft"
+  | "conversion_insight";
+
+export type ApprovalStatus = "pending" | "approved" | "rejected";
+
+export interface ApprovalState {
+  itemId: string;
+  sourceType: ApprovalSourceType;
+  status: ApprovalStatus;
+  updatedAt: string;
+}
+
+export interface ApprovalQueueItem {
+  itemId: string;
+  sourceType: ApprovalSourceType;
+  status: ApprovalStatus;
+  title: string;
+  pageUrl?: string;
+  severity?: Severity;
+  categoryOrType: string;
+  summary: string;
+}
+
+export interface ApprovalQueueReport {
+  generatedAt: string;
+  items: ApprovalQueueItem[];
+}
