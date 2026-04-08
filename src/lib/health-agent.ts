@@ -1,12 +1,29 @@
 import * as cheerio from "cheerio";
 
-import { MAX_KEY_PAGES, MAX_LINK_CHECKS, SITE_URL } from "@/lib/config";
+import { MAX_LINK_CHECKS, MAX_PAGES, SITE_URL } from "@/lib/config";
 import type {
   HealthFinding,
+  FindingCategory,
   HealthReport,
   PageScanResult,
   Severity
 } from "@/types/health";
+
+function getCategory(type: HealthFinding["type"]): FindingCategory {
+  switch (type) {
+    case "homepage_availability":
+    case "key_page_availability":
+      return "availability";
+    case "broken_internal_link":
+      return "links";
+    case "missing_seo_metadata":
+      return "seo";
+    case "missing_image":
+      return "images";
+    default:
+      return "system";
+  }
+}
 
 function buildFinding(
   type: HealthFinding["type"],
@@ -19,6 +36,7 @@ function buildFinding(
   return {
     id: `${type}-${pageUrl}-${message}`.replace(/[^a-zA-Z0-9-_:/.]/g, "-"),
     severity,
+    category: getCategory(type),
     type,
     pageUrl,
     message,
@@ -55,6 +73,7 @@ function normalizeUrl(href: string, baseUrl: string): string | null {
 async function fetchPage(url: string): Promise<{
   status: number | null;
   html: string | null;
+  error?: string;
 }> {
   try {
     const response = await fetch(url, {
@@ -71,10 +90,11 @@ async function fetchPage(url: string): Promise<{
       status: response.status,
       html
     };
-  } catch {
+  } catch (error) {
     return {
       status: null,
-      html: null
+      html: null,
+      error: error instanceof Error ? error.message : "Unknown request error."
     };
   }
 }
@@ -120,7 +140,7 @@ async function scanPage(url: string): Promise<PageScanResult> {
 
 async function checkImageAvailability(
   imageUrl: string
-): Promise<{ ok: boolean; status: number | null }> {
+): Promise<{ ok: boolean; status: number | null; error?: string }> {
   try {
     const response = await fetch(imageUrl, {
       method: "HEAD",
@@ -134,10 +154,11 @@ async function checkImageAvailability(
       ok: response.ok,
       status: response.status
     };
-  } catch {
+  } catch (error) {
     return {
       ok: false,
-      status: null
+      status: null,
+      error: error instanceof Error ? error.message : "Unknown image request error."
     };
   }
 }
@@ -171,10 +192,28 @@ export async function runKennelHealthAgent(): Promise<HealthReport> {
 
   const keyPages = homepage.internalLinks
     .filter((url) => url !== SITE_URL && url !== `${SITE_URL}/`)
-    .slice(0, MAX_KEY_PAGES);
+    .slice(0, Math.max(MAX_PAGES - 1, 0));
 
   const pagesToScan = [SITE_URL, ...keyPages];
-  const scannedPages = await Promise.all(pagesToScan.map((url) => scanPage(url)));
+  const scannedPages: PageScanResult[] = [];
+
+  // Individual page failures should surface as findings instead of ending the scan.
+  for (const url of pagesToScan) {
+    try {
+      scannedPages.push(await scanPage(url));
+    } catch (error) {
+      findings.push(
+        buildFinding(
+          url === SITE_URL ? "homepage_availability" : "key_page_availability",
+          "high",
+          url,
+          "Page scan failed unexpectedly.",
+          checkedAt,
+          error instanceof Error ? error.message : "Unknown scan error."
+        )
+      );
+    }
+  }
 
   for (const page of scannedPages) {
     if (!page.available) {
@@ -239,7 +278,7 @@ export async function runKennelHealthAgent(): Promise<HealthReport> {
           checkedAt,
           link.result.status
             ? `Received HTTP ${link.result.status}.`
-            : "Request failed."
+            : link.result.error ?? "Request failed."
         )
       );
     }
@@ -278,13 +317,15 @@ export async function runKennelHealthAgent(): Promise<HealthReport> {
             "missing_image",
             "medium",
             page.url,
-            "Image appears to be missing or unavailable.",
-            checkedAt,
-            `${image.imageUrl} returned ${image.result.status ?? "no response"}.`
-          )
-        );
-      }
+          "Image appears to be missing or unavailable.",
+          checkedAt,
+          image.result.status
+            ? `${image.imageUrl} returned ${image.result.status}.`
+            : `${image.imageUrl} failed: ${image.result.error ?? "no response"}.`
+        )
+      );
     }
+  }
   }
 
   return {

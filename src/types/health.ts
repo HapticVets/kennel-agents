@@ -1,4 +1,10 @@
 export type Severity = "low" | "medium" | "high";
+export type FindingCategory =
+  | "availability"
+  | "links"
+  | "seo"
+  | "images"
+  | "system";
 
 export type HealthCheckType =
   | "homepage_availability"
@@ -10,6 +16,7 @@ export type HealthCheckType =
 export interface HealthFinding {
   id: string;
   severity: Severity;
+  category: FindingCategory;
   type: HealthCheckType;
   pageUrl: string;
   message: string;
@@ -31,4 +38,9 @@ export interface HealthReport {
   checkedAt: string;
   baseUrl: string;
   findings: HealthFinding[];
+}
+
+export interface HealthReportStore {
+  latest: HealthReport;
+  history: HealthReport[];
 }

@@ -98,10 +98,28 @@ button {
   margin-bottom: 24px;
 }
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 24px;
+}
+
 .stat-card {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.stat-card-high {
+  border-color: rgba(192, 53, 43, 0.22);
+}
+
+.stat-card-medium {
+  border-color: rgba(193, 127, 0, 0.22);
+}
+
+.stat-card-low {
+  border-color: rgba(42, 122, 66, 0.22);
 }
 
 .stat-label {
@@ -124,11 +142,56 @@ button {
   gap: 16px;
 }
 
+.group-list {
+  display: grid;
+  gap: 24px;
+}
+
+.finding-group {
+  display: grid;
+  gap: 14px;
+}
+
+.group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.group-count {
+  color: var(--muted);
+}
+
 .finding-card {
   border: 1px solid var(--panel-border);
   border-radius: 16px;
   padding: 18px;
   background: #fbfcff;
+}
+
+.history-card {
+  align-self: start;
+}
+
+.history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.history-item {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fbfcff;
+}
+
+.history-severities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .finding-topline {
@@ -177,6 +240,10 @@ button {
 
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
   }
 }
 
