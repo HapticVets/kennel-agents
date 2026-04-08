@@ -2,10 +2,15 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 
 import { MAX_SCAN_HISTORY } from "@/lib/config";
-import type { HealthReport, HealthReportStore } from "@/types/health";
+import type {
+  HealthReport,
+  HealthReportStore,
+  ProposedFixReport
+} from "@/types/health";
 
 const dataDirectory = path.join(process.cwd(), "data");
 const findingsFilePath = path.join(dataDirectory, "findings.json");
+const proposedFixesFilePath = path.join(dataDirectory, "proposed-fixes.json");
 
 const emptyReport = (): HealthReport => ({
   checkedAt: "",
@@ -16,6 +21,12 @@ const emptyReport = (): HealthReport => ({
 const emptyStore = (): HealthReportStore => ({
   latest: emptyReport(),
   history: []
+});
+
+const emptyProposedFixReport = (): ProposedFixReport => ({
+  generatedAt: "",
+  sourceCheckedAt: "",
+  fixes: []
 });
 
 function normalizeStore(data: unknown): HealthReportStore {
@@ -61,4 +72,22 @@ export async function appendHealthReport(report: HealthReport): Promise<HealthRe
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(findingsFilePath, JSON.stringify(nextStore, null, 2), "utf8");
   return nextStore;
+}
+
+export async function readProposedFixReport(): Promise<ProposedFixReport> {
+  try {
+    const fileContents = await readFile(proposedFixesFilePath, "utf8");
+    return JSON.parse(fileContents) as ProposedFixReport;
+  } catch {
+    return emptyProposedFixReport();
+  }
+}
+
+export async function writeProposedFixReport(
+  report: ProposedFixReport
+): Promise<ProposedFixReport> {
+  // Proposed fixes are persisted separately so Phase 2 stays independent from the scan history file.
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(proposedFixesFilePath, JSON.stringify(report, null, 2), "utf8");
+  return report;
 }

@@ -7,7 +7,7 @@ export default function HomePage() {
         <p className="eyebrow">Patriot K9 Kennel</p>
         <h1>Kennel Agent System</h1>
         <p className="muted">
-          Phase 1 includes a small admin dashboard and a read-only health agent.
+          Phase 2 includes the health agent plus a read-only proposed fixes workflow.
         </p>
         <Link className="button" href="/admin">
           Open admin dashboard

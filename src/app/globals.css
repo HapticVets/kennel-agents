@@ -52,6 +52,29 @@ button {
   margin-bottom: 24px;
 }
 
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-nav-link {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
+}
+
+.admin-nav-link-active {
+  border-color: rgba(31, 94, 255, 0.25);
+  background: rgba(31, 94, 255, 0.08);
+  color: var(--text);
+}
+
 .card {
   background: var(--panel);
   border: 1px solid var(--panel-border);
@@ -168,6 +191,12 @@ button {
   border-radius: 16px;
   padding: 18px;
   background: #fbfcff;
+}
+
+.fix-content {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
 }
 
 .history-card {

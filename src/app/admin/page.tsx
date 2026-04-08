@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { AdminNav } from "@/components/admin-nav";
 import type {
   FindingCategory,
   HealthFinding,
@@ -107,6 +108,8 @@ export default function AdminDashboardPage() {
           {running ? "Running scan..." : "Run scan"}
         </button>
       </section>
+
+      <AdminNav currentPath="/admin" />
 
       <section className="stats-grid">
         <StatCard label="High severity" value={severityCounts.high} tone="high" />

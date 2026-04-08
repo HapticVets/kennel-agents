@@ -44,3 +44,22 @@ export interface HealthReportStore {
   latest: HealthReport;
   history: HealthReport[];
 }
+
+export interface ProposedFix {
+  id: string;
+  issueTitle: string;
+  severity: Severity;
+  pageUrl: string;
+  category: FindingCategory;
+  recommendedFix: string;
+  beforePreview: string;
+  afterPreview: string;
+  implementationNotes: string;
+  sourceFindingId: string;
+}
+
+export interface ProposedFixReport {
+  generatedAt: string;
+  sourceCheckedAt: string;
+  fixes: ProposedFix[];
+}
