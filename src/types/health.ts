@@ -63,3 +63,27 @@ export interface ProposedFixReport {
   sourceCheckedAt: string;
   fixes: ProposedFix[];
 }
+
+export type ContentDraftType =
+  | "homepage_hero"
+  | "cta_section"
+  | "faq_items"
+  | "service_training_copy"
+  | "puppy_listing_template"
+  | "announcement_post";
+
+export interface ContentDraft {
+  id: string;
+  title: string;
+  contentType: ContentDraftType;
+  purpose: string;
+  targetAudience: string;
+  draftText: string;
+  ctaSuggestion?: string;
+  notes: string;
+}
+
+export interface ContentDraftReport {
+  generatedAt: string;
+  drafts: ContentDraft[];
+}

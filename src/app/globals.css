@@ -261,6 +261,15 @@ button {
   color: var(--low);
 }
 
+.badge-info {
+  background: rgba(31, 94, 255, 0.12);
+  color: var(--accent);
+}
+
+.draft-text {
+  white-space: pre-line;
+}
+
 @media (max-width: 800px) {
   .dashboard-header {
     flex-direction: column;

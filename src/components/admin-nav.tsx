@@ -15,6 +15,12 @@ export function AdminNav({ currentPath }: { currentPath: string }) {
       >
         Proposed fixes
       </Link>
+      <Link
+        className={`admin-nav-link ${currentPath === "/admin/content-drafts" ? "admin-nav-link-active" : ""}`}
+        href="/admin/content-drafts"
+      >
+        Content drafts
+      </Link>
     </nav>
   );
 }

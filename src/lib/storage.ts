@@ -3,6 +3,7 @@ import path from "path";
 
 import { MAX_SCAN_HISTORY } from "@/lib/config";
 import type {
+  ContentDraftReport,
   HealthReport,
   HealthReportStore,
   ProposedFixReport
@@ -11,6 +12,7 @@ import type {
 const dataDirectory = path.join(process.cwd(), "data");
 const findingsFilePath = path.join(dataDirectory, "findings.json");
 const proposedFixesFilePath = path.join(dataDirectory, "proposed-fixes.json");
+const contentDraftsFilePath = path.join(dataDirectory, "content-drafts.json");
 
 const emptyReport = (): HealthReport => ({
   checkedAt: "",
@@ -27,6 +29,11 @@ const emptyProposedFixReport = (): ProposedFixReport => ({
   generatedAt: "",
   sourceCheckedAt: "",
   fixes: []
+});
+
+const emptyContentDraftReport = (): ContentDraftReport => ({
+  generatedAt: "",
+  drafts: []
 });
 
 function normalizeStore(data: unknown): HealthReportStore {
@@ -89,5 +96,23 @@ export async function writeProposedFixReport(
   // Proposed fixes are persisted separately so Phase 2 stays independent from the scan history file.
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(proposedFixesFilePath, JSON.stringify(report, null, 2), "utf8");
+  return report;
+}
+
+export async function readContentDraftReport(): Promise<ContentDraftReport> {
+  try {
+    const fileContents = await readFile(contentDraftsFilePath, "utf8");
+    return JSON.parse(fileContents) as ContentDraftReport;
+  } catch {
+    return emptyContentDraftReport();
+  }
+}
+
+export async function writeContentDraftReport(
+  report: ContentDraftReport
+): Promise<ContentDraftReport> {
+  // Content drafts stay file-backed so the phase remains simple and easy to inspect.
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(contentDraftsFilePath, JSON.stringify(report, null, 2), "utf8");
   return report;
 }
