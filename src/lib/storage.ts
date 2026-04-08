@@ -4,6 +4,7 @@ import path from "path";
 import { MAX_SCAN_HISTORY } from "@/lib/config";
 import type {
   ContentDraftReport,
+  ConversionInsightReport,
   HealthReport,
   HealthReportStore,
   ProposedFixReport
@@ -13,6 +14,7 @@ const dataDirectory = path.join(process.cwd(), "data");
 const findingsFilePath = path.join(dataDirectory, "findings.json");
 const proposedFixesFilePath = path.join(dataDirectory, "proposed-fixes.json");
 const contentDraftsFilePath = path.join(dataDirectory, "content-drafts.json");
+const conversionInsightsFilePath = path.join(dataDirectory, "conversion-insights.json");
 
 const emptyReport = (): HealthReport => ({
   checkedAt: "",
@@ -34,6 +36,11 @@ const emptyProposedFixReport = (): ProposedFixReport => ({
 const emptyContentDraftReport = (): ContentDraftReport => ({
   generatedAt: "",
   drafts: []
+});
+
+const emptyConversionInsightReport = (): ConversionInsightReport => ({
+  generatedAt: "",
+  insights: []
 });
 
 function normalizeStore(data: unknown): HealthReportStore {
@@ -114,5 +121,23 @@ export async function writeContentDraftReport(
   // Content drafts stay file-backed so the phase remains simple and easy to inspect.
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(contentDraftsFilePath, JSON.stringify(report, null, 2), "utf8");
+  return report;
+}
+
+export async function readConversionInsightReport(): Promise<ConversionInsightReport> {
+  try {
+    const fileContents = await readFile(conversionInsightsFilePath, "utf8");
+    return JSON.parse(fileContents) as ConversionInsightReport;
+  } catch {
+    return emptyConversionInsightReport();
+  }
+}
+
+export async function writeConversionInsightReport(
+  report: ConversionInsightReport
+): Promise<ConversionInsightReport> {
+  // Conversion insights stay local and review-only in Phase 4.
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(conversionInsightsFilePath, JSON.stringify(report, null, 2), "utf8");
   return report;
 }

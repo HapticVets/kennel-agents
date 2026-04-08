@@ -21,6 +21,12 @@ export function AdminNav({ currentPath }: { currentPath: string }) {
       >
         Content drafts
       </Link>
+      <Link
+        className={`admin-nav-link ${currentPath === "/admin/conversion-insights" ? "admin-nav-link-active" : ""}`}
+        href="/admin/conversion-insights"
+      >
+        Conversion insights
+      </Link>
     </nav>
   );
 }

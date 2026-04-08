@@ -87,3 +87,26 @@ export interface ContentDraftReport {
   generatedAt: string;
   drafts: ContentDraft[];
 }
+
+export type ConversionInsightCategory =
+  | "messaging"
+  | "cta"
+  | "flow"
+  | "trust"
+  | "services"
+  | "drop_off";
+
+export interface ConversionInsight {
+  id: string;
+  category: ConversionInsightCategory;
+  issueOrObservation: string;
+  severity: Severity;
+  pageUrl: string;
+  recommendation: string;
+  improvementExample: string;
+}
+
+export interface ConversionInsightReport {
+  generatedAt: string;
+  insights: ConversionInsight[];
+}
