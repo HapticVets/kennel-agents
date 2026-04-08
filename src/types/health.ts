@@ -140,3 +140,33 @@ export interface ApprovalQueueReport {
   generatedAt: string;
   items: ApprovalQueueItem[];
 }
+
+export type ApplyStatus = "ready" | "applied" | "failed";
+
+export interface ApplyResult {
+  itemId: string;
+  sourceType: "proposed_fix" | "content_draft";
+  targetFile: string;
+  changeSummary: string;
+  patchPreview: string;
+  status: ApplyStatus;
+  updatedAt: string;
+  message?: string;
+}
+
+export interface ApplyQueueItem {
+  itemId: string;
+  sourceType: "proposed_fix" | "content_draft";
+  title: string;
+  pageUrl?: string;
+  suggestedTargetFile: string;
+  changeSummary: string;
+  patchPreview: string;
+  status: ApplyStatus;
+  message?: string;
+}
+
+export interface ApplyQueueReport {
+  generatedAt: string;
+  items: ApplyQueueItem[];
+}

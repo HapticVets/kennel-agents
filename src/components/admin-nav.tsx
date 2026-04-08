@@ -33,6 +33,12 @@ export function AdminNav({ currentPath }: { currentPath: string }) {
       >
         Approvals
       </Link>
+      <Link
+        className={`admin-nav-link ${currentPath === "/admin/apply-changes" ? "admin-nav-link-active" : ""}`}
+        href="/admin/apply-changes"
+      >
+        Apply changes
+      </Link>
     </nav>
   );
 }

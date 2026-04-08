@@ -3,6 +3,7 @@ import path from "path";
 
 import { MAX_SCAN_HISTORY } from "@/lib/config";
 import type {
+  ApplyResult,
   ApprovalState,
   ContentDraftReport,
   ConversionInsightReport,
@@ -17,6 +18,7 @@ const proposedFixesFilePath = path.join(dataDirectory, "proposed-fixes.json");
 const contentDraftsFilePath = path.join(dataDirectory, "content-drafts.json");
 const conversionInsightsFilePath = path.join(dataDirectory, "conversion-insights.json");
 const approvalsFilePath = path.join(dataDirectory, "approvals.json");
+const applyResultsFilePath = path.join(dataDirectory, "apply-results.json");
 
 const emptyReport = (): HealthReport => ({
   checkedAt: "",
@@ -46,6 +48,7 @@ const emptyConversionInsightReport = (): ConversionInsightReport => ({
 });
 
 const emptyApprovalStates = (): ApprovalState[] => [];
+const emptyApplyResults = (): ApplyResult[] => [];
 
 function normalizeStore(data: unknown): HealthReportStore {
   // This fallback keeps older single-report JSON files compatible.
@@ -162,4 +165,22 @@ export async function writeApprovalStates(
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(approvalsFilePath, JSON.stringify(states, null, 2), "utf8");
   return states;
+}
+
+export async function readApplyResults(): Promise<ApplyResult[]> {
+  try {
+    const fileContents = await readFile(applyResultsFilePath, "utf8");
+    return JSON.parse(fileContents) as ApplyResult[];
+  } catch {
+    return emptyApplyResults();
+  }
+}
+
+export async function writeApplyResults(
+  results: ApplyResult[]
+): Promise<ApplyResult[]> {
+  // Apply results are tracked separately so staging actions remain auditable and reversible by hand.
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(applyResultsFilePath, JSON.stringify(results, null, 2), "utf8");
+  return results;
 }
