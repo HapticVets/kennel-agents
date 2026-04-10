@@ -4,8 +4,9 @@ import { getAdminSessionCookieName, verifyAdminSessionToken } from "@/lib/admin-
 import { IS_HOSTED_MODE } from "@/lib/config";
 
 export default async function AdminDashboardPage() {
-  // Read token from cookie
-  const token = cookies().get(getAdminSessionCookieName())?.value;
+  // Await cookies to get the correct type
+  const cookieStore = await cookies();
+  const token = cookieStore.get(getAdminSessionCookieName())?.value;
 
   const sessionValid = await verifyAdminSessionToken(token, {
     requireSupabaseSession: IS_HOSTED_MODE,
@@ -14,7 +15,7 @@ export default async function AdminDashboardPage() {
   if (!sessionValid) {
     // Redirect to login if not authenticated
     redirect("/admin/login");
-    return; // <-- exit here to prevent further code execution
+    return; // exit early
   }
 
   // Redirect to operator dashboard if authenticated
