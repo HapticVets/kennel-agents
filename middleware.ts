@@ -8,57 +8,52 @@ import {
 import { IS_HOSTED_MODE } from "@/lib/config";
 
 function isProtectedPath(pathname: string): boolean {
+  // Protect all /admin paths except /admin/login
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     return true;
   }
 
-  if (!pathname.startsWith("/api/")) {
-    return false;
+  // Protect all non-public API endpoints
+  if (pathname.startsWith("/api/")) {
+    return !(
+      pathname === "/api/admin/login" ||
+      pathname === "/api/admin/logout" ||
+      pathname.startsWith("/api/public/") ||
+      pathname.startsWith("/api/puppy-images/")
+    );
   }
 
-  // Keep public inventory reads and local-dev image reads open
-  return (
-    pathname !== "/api/admin/login" &&
-    pathname !== "/api/admin/logout" &&
-    !pathname.startsWith("/api/public/") &&
-    !pathname.startsWith("/api/puppy-images/")
-  );
+  return false;
 }
 
 export async function middleware(request: NextRequest) {
+  console.log("[Middleware] Path requested:", request.nextUrl.pathname);
+
   if (!isProtectedPath(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get(getAdminSessionCookieName())?.value;
 
-  // Immediately redirect if no session token exists
-  if (!token) {
-    const loginUrl = new URL("/admin/login", request.url);
-    loginUrl.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Verify token for hosted mode (Vercel)
-  const valid = await verifyAdminSessionToken(token, {
-    requireSupabaseSession: IS_HOSTED_MODE
+  const sessionValid = await verifyAdminSessionToken(token, {
+    requireSupabaseSession: true // always check in production
   });
 
-  if (valid) {
+  if (sessionValid) {
     return NextResponse.next();
   }
 
-  // Unauthorized access to API
   if (request.nextUrl.pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  // Redirect to login if session token invalid
+  // Redirect to login with `next` param for post-login redirect
   const loginUrl = new URL("/admin/login", request.url);
   loginUrl.searchParams.set("next", request.nextUrl.pathname);
   return NextResponse.redirect(loginUrl);
 }
 
+// Ensure middleware runs on /admin pages and API paths
 export const config = {
   matcher: ["/admin", "/admin/:path*", "/api/:path*"]
 };
