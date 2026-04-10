@@ -1,10 +1,17 @@
+import { getSupabaseConfig, isSupabaseAuthConfigured } from "@/lib/supabase-config";
+
 const sessionCookieName = "kennel_admin_session";
 const sessionDurationMs = 1000 * 60 * 60 * 12;
 
 type AdminSessionPayload = {
   identity: string;
-  issuedAt: number;
+  authUid?: string;
   supabaseAccessToken?: string;
+  issuedAt: number;
+};
+
+type VerifyAdminSessionOptions = {
+  requireSupabaseSession?: boolean;
 };
 
 function getSessionSecret(): string {
@@ -17,57 +24,13 @@ function getSessionSecret(): string {
   return secret || "local-dev-session-secret-change-me";
 }
 
-export function getAdminCredentials() {
-  return {
-    username: process.env.ADMIN_USERNAME || "admin",
-    password: process.env.ADMIN_PASSWORD || "change-me"
-  };
+function serializePayload(payload: AdminSessionPayload): string {
+  return encodeURIComponent(JSON.stringify(payload));
 }
 
-function getAllowedAdminEmails(): string[] {
-  return (process.env.ADMIN_ALLOWED_EMAILS || "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-export function isAdminIdentityAllowed(identity: string): boolean {
-  const allowedEmails = getAllowedAdminEmails();
-
-  if (allowedEmails.length === 0) {
-    // Local development keeps the simple fallback usable. Hosted production
-    // should always set ADMIN_ALLOWED_EMAILS to the owner/partner emails.
-    return process.env.NODE_ENV !== "production";
-  }
-
-  return allowedEmails.includes(identity.trim().toLowerCase());
-}
-
-function bytesToHex(bytes: ArrayBuffer): string {
-  return [...new Uint8Array(bytes)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-function safeEqual(left: string, right: string): boolean {
-  if (left.length !== right.length) return false;
-
-  let diff = 0;
-
-  for (let index = 0; index < left.length; index += 1) {
-    diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
-  }
-
-  return diff === 0;
-}
-
-function encodePayload(payload: AdminSessionPayload): string {
-  return btoa(JSON.stringify(payload));
-}
-
-function decodePayload(value: string): AdminSessionPayload | null {
+function deserializePayload(value: string): AdminSessionPayload | null {
   try {
-    const parsed = JSON.parse(atob(value)) as AdminSessionPayload;
+    const parsed = JSON.parse(decodeURIComponent(value)) as AdminSessionPayload;
 
     if (!parsed.identity || !parsed.issuedAt) {
       return null;
@@ -79,8 +42,27 @@ function decodePayload(value: string): AdminSessionPayload | null {
   }
 }
 
+function bytesToHex(bytes: ArrayBuffer): string {
+  return [...new Uint8Array(bytes)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function safeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  let diff = 0;
+
+  for (let index = 0; index < left.length; index += 1) {
+    diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+
+  return diff === 0;
+}
+
 async function createSignature(value: string): Promise<string> {
-  // Use Web Crypto instead of Node's crypto module so auth works in Vercel middleware.
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -94,70 +76,153 @@ async function createSignature(value: string): Promise<string> {
   return bytesToHex(signature);
 }
 
-export async function createAdminSessionToken(
-  username: string,
-  supabaseAccessToken?: string
-): Promise<string> {
-  const payload = encodePayload({
-    identity: username,
-    issuedAt: Date.now(),
-    supabaseAccessToken
-  });
-
-  return `${payload}.${await createSignature(payload)}`;
+function hasHostedSupabaseAdminConfig(): boolean {
+  const config = getSupabaseConfig();
+  return Boolean(config.url && config.anonKey && config.serviceRoleKey);
 }
 
-async function verifySupabaseAccessToken(accessToken: string | undefined): Promise<string | null> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+async function fetchSupabaseUser(
+  accessToken: string
+): Promise<{ id: string; email: string } | null> {
+  const config = getSupabaseConfig();
 
-  if (!accessToken || !supabaseUrl || !anonKey) {
+  if (!config.url || !config.anonKey) {
     return null;
   }
 
   try {
-    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    const response = await fetch(`${config.url}/auth/v1/user`, {
       headers: {
-        apikey: anonKey,
+        apikey: config.anonKey,
         authorization: `Bearer ${accessToken}`
-      }
+      },
+      cache: "no-store"
     });
 
     if (!response.ok) {
       return null;
     }
 
-    const data = (await response.json()) as { email?: string };
-    return data.email ?? null;
+    const data = (await response.json()) as { id?: string; email?: string };
+
+    if (!data.id || !data.email) {
+      return null;
+    }
+
+    return {
+      id: data.id,
+      email: data.email
+    };
   } catch {
     return null;
   }
 }
 
+export async function isSupabaseAdminUserAllowed(authUid: string): Promise<boolean> {
+  const config = getSupabaseConfig();
+
+  if (!config.url || !config.serviceRoleKey) {
+    return false;
+  }
+
+  const query = new URLSearchParams({
+    select: "auth_uid",
+    auth_uid: `eq.${authUid}`,
+    is_active: "eq.true",
+    limit: "1"
+  });
+
+  try {
+    const response = await fetch(
+      `${config.url}/rest/v1/kennel_admins?${query.toString()}`,
+      {
+        headers: {
+          apikey: config.serviceRoleKey,
+          authorization: `Bearer ${config.serviceRoleKey}`
+        },
+        cache: "no-store"
+      }
+    );
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = (await response.json()) as Array<{ auth_uid?: string }>;
+    return data.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function verifyHostedAdminSession(
+  payload: AdminSessionPayload
+): Promise<boolean> {
+  if (
+    !payload.supabaseAccessToken ||
+    !payload.authUid ||
+    !hasHostedSupabaseAdminConfig()
+  ) {
+    return false;
+  }
+
+  const user = await fetchSupabaseUser(payload.supabaseAccessToken);
+
+  if (!user) {
+    return false;
+  }
+
+  if (
+    user.id !== payload.authUid ||
+    user.email.toLowerCase() !== payload.identity.toLowerCase()
+  ) {
+    return false;
+  }
+
+  return isSupabaseAdminUserAllowed(user.id);
+}
+
+export async function createAdminSessionToken(
+  identity: string,
+  options?: {
+    authUid?: string;
+    supabaseAccessToken?: string;
+  }
+): Promise<string> {
+  const payload = serializePayload({
+    identity,
+    authUid: options?.authUid,
+    supabaseAccessToken: options?.supabaseAccessToken,
+    issuedAt: Date.now()
+  });
+
+  return `${payload}.${await createSignature(payload)}`;
+}
+
 export async function verifyAdminSessionToken(
   token: string | undefined,
-  options: { requireSupabaseSession?: boolean } = {}
+  options: VerifyAdminSessionOptions = {}
 ): Promise<boolean> {
   if (!token || !token.includes(".")) {
     return false;
   }
 
   const lastSeparator = token.lastIndexOf(".");
-  const payload = token.slice(0, lastSeparator);
+  const payloadValue = token.slice(0, lastSeparator);
   const signature = token.slice(lastSeparator + 1);
-  const sessionPayload = decodePayload(payload);
+  const payload = deserializePayload(payloadValue);
 
-  if (
-    !sessionPayload ||
-    !isAdminIdentityAllowed(sessionPayload.identity) ||
-    !Number.isFinite(sessionPayload.issuedAt) ||
-    Date.now() - sessionPayload.issuedAt > sessionDurationMs
-  ) {
+  if (!payload) {
+    return false;
+  }
+
+  if (!Number.isFinite(payload.issuedAt) || Date.now() - payload.issuedAt > sessionDurationMs) {
     return false;
   }
 
   try {
-    const expectedSignature = await createSignature(payload);
+    const expectedSignature = await createSignature(payloadValue);
+
     if (!safeEqual(signature, expectedSignature)) {
       return false;
     }
@@ -166,18 +231,17 @@ export async function verifyAdminSessionToken(
       return true;
     }
 
-    const supabaseEmail = await verifySupabaseAccessToken(
-      sessionPayload.supabaseAccessToken
-    );
-
-    return Boolean(
-      supabaseEmail &&
-        supabaseEmail.toLowerCase() === sessionPayload.identity.toLowerCase() &&
-        isAdminIdentityAllowed(supabaseEmail)
-    );
+    return verifyHostedAdminSession(payload);
   } catch {
     return false;
   }
+}
+
+export function getAdminCredentials() {
+  return {
+    username: process.env.ADMIN_USERNAME || "admin",
+    password: process.env.ADMIN_PASSWORD || "change-me"
+  };
 }
 
 export function getAdminSessionCookieName(): string {
@@ -186,4 +250,16 @@ export function getAdminSessionCookieName(): string {
 
 export function getAdminSessionMaxAgeSeconds(): number {
   return sessionDurationMs / 1000;
+}
+
+export function requireHostedSupabaseAdminAuth(): void {
+  if (process.env.NODE_ENV !== "production") {
+    return;
+  }
+
+  if (!isSupabaseAuthConfigured() || !hasHostedSupabaseAdminConfig()) {
+    throw new Error(
+      "Hosted admin auth requires NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY."
+    );
+  }
 }

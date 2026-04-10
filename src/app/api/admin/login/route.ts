@@ -4,52 +4,84 @@ import { createClient } from "@supabase/supabase-js";
 import {
   createAdminSessionToken,
   getAdminCredentials,
-  getAdminSessionMaxAgeSeconds,
   getAdminSessionCookieName,
-  isAdminIdentityAllowed
+  getAdminSessionMaxAgeSeconds,
+  isSupabaseAdminUserAllowed,
+  requireHostedSupabaseAdminAuth
 } from "@/lib/admin-auth";
+import { IS_HOSTED_MODE } from "@/lib/config";
 import { getSupabaseConfig, isSupabaseAuthConfigured } from "@/lib/supabase-config";
 
-export async function POST(request: Request) {
-  const body = (await request.json()) as {
-    username?: string;
-    password?: string;
-  };
+type LoginRequestBody = {
+  email?: string;
+  username?: string;
+  password?: string;
+};
 
-  let authenticatedUsername = body.username || "";
+export async function POST(request: Request) {
+  const body = (await request.json()) as LoginRequestBody;
+  const identity = String(body.email || body.username || "").trim();
+  const password = String(body.password || "");
+
+  if (!identity || !password) {
+    return NextResponse.json(
+      { error: "Email and password are required." },
+      { status: 400 }
+    );
+  }
+
+  if (IS_HOSTED_MODE) {
+    try {
+      requireHostedSupabaseAdminAuth();
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error:
+            error instanceof Error
+              ? error.message
+              : "Hosted admin auth is not configured."
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  let authenticatedIdentity = identity;
+  let authUid: string | undefined;
   let supabaseAccessToken: string | undefined;
 
   if (isSupabaseAuthConfigured()) {
     const config = getSupabaseConfig();
-    const supabase = createClient(config.url, config.anonKey);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: body.username || "",
-      password: body.password || ""
+    const supabase = createClient(config.url, config.anonKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     });
 
-    if (error || !data.user?.email) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: identity,
+      password
+    });
+
+    if (error || !data.user?.id || !data.user.email || !data.session?.access_token) {
       return NextResponse.json(
         { error: "Invalid Supabase admin credentials." },
         { status: 401 }
       );
     }
 
-    authenticatedUsername = data.user.email;
+    const isAllowedAdmin = await isSupabaseAdminUserAllowed(data.user.id);
 
-    if (!isAdminIdentityAllowed(authenticatedUsername)) {
+    if (!isAllowedAdmin) {
       return NextResponse.json(
-        { error: "This Supabase user is not authorized for kennel admin access." },
+        { error: "This authenticated user is not listed in kennel_admins." },
         { status: 403 }
       );
     }
 
-    if (!data.session?.access_token) {
-      return NextResponse.json(
-        { error: "Supabase did not return a valid admin session." },
-        { status: 401 }
-      );
-    }
-
+    authenticatedIdentity = data.user.email;
+    authUid = data.user.id;
     supabaseAccessToken = data.session.access_token;
   } else {
     if (process.env.NODE_ENV === "production") {
@@ -61,10 +93,7 @@ export async function POST(request: Request) {
 
     const credentials = getAdminCredentials();
 
-    if (
-      body.username !== credentials.username ||
-      body.password !== credentials.password
-    ) {
+    if (identity !== credentials.username || password !== credentials.password) {
       return NextResponse.json(
         { error: "Invalid admin credentials." },
         { status: 401 }
@@ -72,9 +101,12 @@ export async function POST(request: Request) {
     }
   }
 
-  const response = NextResponse.json({ success: true });
-  const sessionToken = await createAdminSessionToken(authenticatedUsername, supabaseAccessToken);
+  const sessionToken = await createAdminSessionToken(authenticatedIdentity, {
+    authUid,
+    supabaseAccessToken
+  });
 
+  const response = NextResponse.json({ success: true });
   response.cookies.set(getAdminSessionCookieName(), sessionToken, {
     httpOnly: true,
     maxAge: getAdminSessionMaxAgeSeconds(),

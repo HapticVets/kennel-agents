@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [nextPath, setNextPath] = useState("/admin/operator");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setNextPath(params.get("next") || "/admin/operator");
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -21,7 +27,10 @@ export default function AdminLoginPage() {
         headers: {
           "content-type": "application/json"
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({
+          email,
+          password
+        })
       });
       const data = (await response.json()) as { error?: string };
 
@@ -30,7 +39,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      router.push("/admin/operator");
+      router.push(nextPath);
       router.refresh();
     } finally {
       setSubmitting(false);
@@ -43,25 +52,29 @@ export default function AdminLoginPage() {
         <p className="eyebrow">Admin Access</p>
         <h1>Sign in</h1>
         <p className="muted">
-          The deployed puppy listing dashboard is protected behind a simple admin login.
+          Sign in with a Supabase Auth email/password that is linked to an active
+          row in the <code>kennel_admins</code> table.
         </p>
 
         {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
         <form className="intake-form" onSubmit={handleSubmit}>
           <label className="approval-filter">
-            Email or local username
+            Email
             <input
+              autoComplete="email"
               className="text-input"
-              onChange={(event) => setUsername(event.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
               required
-              type="text"
-              value={username}
+              type="email"
+              value={email}
             />
           </label>
+
           <label className="approval-filter">
             Password
             <input
+              autoComplete="current-password"
               className="text-input"
               onChange={(event) => setPassword(event.target.value)}
               required
@@ -69,6 +82,7 @@ export default function AdminLoginPage() {
               value={password}
             />
           </label>
+
           <button className="button" disabled={submitting} type="submit">
             {submitting ? "Signing in..." : "Sign in"}
           </button>
