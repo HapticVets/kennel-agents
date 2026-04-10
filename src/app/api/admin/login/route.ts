@@ -1,119 +1,63 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createAdminSessionToken } from "@/lib/admin-auth";
+import { getSupabaseConfig } from "@/lib/supabase-config";
 
-import {
-  createAdminSessionToken,
-  getAdminCredentials,
-  getAdminSessionCookieName,
-  getAdminSessionMaxAgeSeconds,
-  isSupabaseAdminUserAllowed,
-  requireHostedSupabaseAdminAuth
-} from "@/lib/admin-auth";
-import { IS_HOSTED_MODE } from "@/lib/config";
-import { getSupabaseConfig, isSupabaseAuthConfigured } from "@/lib/supabase-config";
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { email, password } = body;
 
-type LoginRequestBody = {
-  email?: string;
-  username?: string;
-  password?: string;
-};
-
-export async function POST(request: Request) {
-  const body = (await request.json()) as LoginRequestBody;
-  const identity = String(body.email || body.username || "").trim();
-  const password = String(body.password || "");
-
-  if (!identity || !password) {
-    return NextResponse.json(
-      { error: "Email and password are required." },
-      { status: 400 }
-    );
-  }
-
-  if (IS_HOSTED_MODE) {
-    try {
-      requireHostedSupabaseAdminAuth();
-    } catch (error) {
-      return NextResponse.json(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : "Hosted admin auth is not configured."
-        },
-        { status: 500 }
-      );
-    }
-  }
-
-  let authenticatedIdentity = identity;
-  let authUid: string | undefined;
-  let supabaseAccessToken: string | undefined;
-
-  if (isSupabaseAuthConfigured()) {
     const config = getSupabaseConfig();
-    const supabase = createClient(config.url, config.anonKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: identity,
-      password
-    });
-
-    if (error || !data.user?.id || !data.user.email || !data.session?.access_token) {
+    if (!config.url || !config.anonKey) {
       return NextResponse.json(
-        { error: "Invalid Supabase admin credentials." },
-        { status: 401 }
-      );
-    }
-
-    const isAllowedAdmin = await isSupabaseAdminUserAllowed(data.user.id);
-
-    if (!isAllowedAdmin) {
-      return NextResponse.json(
-        { error: "This authenticated user is not listed in kennel_admins." },
-        { status: 403 }
-      );
-    }
-
-    authenticatedIdentity = data.user.email;
-    authUid = data.user.id;
-    supabaseAccessToken = data.session.access_token;
-  } else {
-    if (process.env.NODE_ENV === "production") {
-      return NextResponse.json(
-        { error: "Supabase Auth must be configured for hosted admin access." },
+        { error: "Supabase is not configured for hosted mode." },
         { status: 500 }
       );
     }
 
-    const credentials = getAdminCredentials();
+    // Sign in via Supabase Auth
+    const authResp = await fetch(`${config.url}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: {
+        apikey: config.anonKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-    if (identity !== credentials.username || password !== credentials.password) {
-      return NextResponse.json(
-        { error: "Invalid admin credentials." },
-        { status: 401 }
-      );
+    const authData = await authResp.json();
+    if (!authResp.ok || !authData.access_token) {
+      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
+
+    // Check if email exists in kennel_admins
+    const adminCheck = await fetch(
+      `${config.url}/rest/v1/kennel_admins?select=email&email=eq.${email}&is_active=eq.true`,
+      {
+        headers: {
+          apikey: config.serviceRoleKey,
+          authorization: `Bearer ${config.serviceRoleKey}`
+        },
+        cache: "no-store"
+      }
+    );
+    const admins = await adminCheck.json();
+    if (!admins || admins.length === 0) {
+      return NextResponse.json({ error: "User is not authorized as admin." }, { status: 403 });
+    }
+
+    // Create admin session cookie
+    const token = await createAdminSessionToken(email);
+    const res = NextResponse.json({ ok: true });
+    res.cookies.set({
+      name: "kennel_admin_session",
+      value: token,
+      httpOnly: true,
+      path: "/",
+      maxAge: 60 * 60 * 12 // 12 hours
+    });
+    return res;
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message || "Unknown error" }, { status: 500 });
   }
-
-  const sessionToken = await createAdminSessionToken(authenticatedIdentity, {
-    authUid,
-    supabaseAccessToken
-  });
-
-  const response = NextResponse.json({ success: true });
-  response.cookies.set(getAdminSessionCookieName(), sessionToken, {
-    httpOnly: true,
-    maxAge: getAdminSessionMaxAgeSeconds(),
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/"
-  });
-
-  return response;
 }
