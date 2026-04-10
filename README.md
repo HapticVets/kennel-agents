@@ -1,9 +1,49 @@
 # Kennel Agent System
 
-Phase 1 is a minimal Next.js + TypeScript app with:
+Next.js admin dashboard for kennel operations and agent-assisted site review.
 
-- a small admin dashboard at `/admin`
-- a read-only kennel health agent
-- local JSON persistence for findings
+## Current Hosting Model
 
-The first version intentionally focuses on visibility instead of automation or fixes.
+- Puppy listings are web-ready and use Supabase as the source of truth.
+- Admin access is protected by the dashboard login and a signed HTTP-only session cookie.
+- SEO/content tools still use local JSON files and local website-repo paths, so keep those as local/operator tools until they are migrated separately.
+
+## Vercel Setup
+
+1. Create a Vercel project from this repository.
+2. Use the default Next.js settings:
+   - Install command: `npm install`
+   - Build command: `npm run build`
+   - Output: Next.js default
+3. Add these Vercel environment variables for Production, Preview, and Development:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_PUPPY_IMAGE_BUCKET=puppy-listings`
+   - `ADMIN_SESSION_SECRET`
+   - `KENNEL_HEALTH_DEBUG=false`
+4. In Supabase Auth, create the admin user that should be allowed to log in.
+   - When `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set, `/admin/login` uses Supabase Auth email/password.
+   - `ADMIN_SESSION_SECRET` should be a long random string used only to sign the dashboard session cookie.
+5. Confirm the Supabase tables and storage bucket exist:
+   - `puppy_listings`
+   - `puppy_listing_images`
+   - `puppy_listing_meta`
+   - public storage bucket named by `SUPABASE_PUPPY_IMAGE_BUCKET`
+6. Deploy, then open `/admin/login` and sign in with the Supabase admin email/password.
+
+## Production Notes
+
+- In production, puppy listing storage requires Supabase. The app intentionally does not fall back to local SQLite or local images on Vercel.
+- `/api/public/puppy-listings` remains public so the website can read live puppy inventory.
+- Dashboard APIs are protected by middleware, except the login route and public puppy listing/image reads.
+- The release/deploy agents still assume local filesystem and git access to `C:\Users\jrees\das-muller-website`; do not treat those as production-hosted workflows yet.
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+For local puppy listing development, copy `.env.example` to `.env.local` and fill in the Supabase values.

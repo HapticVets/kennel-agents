@@ -1,30 +1,5 @@
 {
-  "generatedAt": "2026-04-08T21:24:43.756Z",
-  "sourceCheckedAt": "2026-04-08T21:24:35.336Z",
-  "fixes": [
-    {
-      "id": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.-draft-fix",
-      "issueTitle": "Page title is missing.",
-      "severity": "medium",
-      "pageUrl": "https://patriotk9kennel.com",
-      "category": "seo",
-      "sourceFindingId": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.",
-      "recommendedFix": "Add a descriptive page title that clearly reflects the page purpose and kennel offering.",
-      "beforePreview": "Before: the page renders without a meaningful <title> tag.",
-      "afterPreview": "After: the page includes a clear, unique title in the document metadata.",
-      "implementationNotes": "Update the page metadata export or head configuration in the matching Next.js route."
-    },
-    {
-      "id": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.-draft-fix",
-      "issueTitle": "Meta description is missing.",
-      "severity": "low",
-      "pageUrl": "https://patriotk9kennel.com",
-      "category": "seo",
-      "sourceFindingId": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.",
-      "recommendedFix": "Add a concise meta description that explains the page content and encourages clicks from search results.",
-      "beforePreview": "Before: the page has no meta description content for search engines or social previews.",
-      "afterPreview": "After: the page includes a concise, unique meta description.",
-      "implementationNotes": "Update the Next.js metadata export for the page and keep the description aligned with the visible content."
-    }
-  ]
+  "generatedAt": "2026-04-09T12:11:13.911Z",
+  "sourceCheckedAt": "2026-04-09T12:08:53.825Z",
+  "fixes": []
 }

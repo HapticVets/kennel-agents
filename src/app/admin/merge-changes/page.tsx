@@ -183,18 +183,21 @@ export default function MergeChangesPage() {
                               ? "Applying..."
                               : "Apply Merge"}
                           </button>
-                          <button
-                            className="button approval-button approval-button-secondary"
-                            disabled={
-                              pendingActionKey === `${item.sourceType}-${item.itemId}-skip`
-                            }
-                            onClick={() => runAction(item.itemId, item.sourceType, "skip")}
-                            type="button"
-                          >
-                            {pendingActionKey === `${item.sourceType}-${item.itemId}-skip`
-                              ? "Skipping..."
-                              : "Skip"}
-                          </button>
+                          <details className="secondary-action-details">
+                            <summary>More</summary>
+                            <button
+                              className="button approval-button approval-button-secondary"
+                              disabled={
+                                pendingActionKey === `${item.sourceType}-${item.itemId}-skip`
+                              }
+                              onClick={() => runAction(item.itemId, item.sourceType, "skip")}
+                              type="button"
+                            >
+                              {pendingActionKey === `${item.sourceType}-${item.itemId}-skip`
+                                ? "Skipping..."
+                                : "Skip"}
+                            </button>
+                          </details>
                         </div>
                       </article>
                     ))}

@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-04-09T18:53:01.161Z",
+  "pageUrl": "https://www.patriotk9kennel.com",
+  "drafts": [
+    {
+      "id": "seo_title-baseline-homepage-title-rewrite",
+      "sectionName": "seo_title",
+      "sourceInsightTitle": "Baseline homepage title rewrite",
+      "currentWording": "Das Muller German Shepherds | Structured Training and Puppy Placement",
+      "improvedRewrite": "Patriot K9 Kennel | German Shepherd Puppies and Structured Training",
+      "reasonForRewrite": "A stronger homepage title can improve ranking clarity and click-through for breed and training searches.",
+      "alternateVersion": "Patriot K9 Kennel | Puppy Applications and Training Support"
+    },
+    {
+      "id": "meta_description-baseline-meta-description-rewrite",
+      "sectionName": "meta_description",
+      "sourceInsightTitle": "Baseline meta description rewrite",
+      "currentWording": "Purpose-bred German Shepherds, structured puppy placement, and training support for serious homes.",
+      "improvedRewrite": "Explore purpose-bred German Shepherd puppies, structured placement, and training support from Patriot K9 Kennel.",
+      "reasonForRewrite": "A clearer description can improve click-through and set better expectations before visitors land on the homepage.",
+      "alternateVersion": "Patriot K9 Kennel offers German Shepherd puppies, guided placement, and training support for serious homes."
+    },
+    {
+      "id": "hero_headline-baseline-hero-headline-rewrite",
+      "sectionName": "hero_headline",
+      "sourceInsightTitle": "Baseline hero headline rewrite",
+      "currentWording": "Purpose-Bred German Shepherds Trained and Matched for the Right Home",
+      "improvedRewrite": "Purpose-Bred German Shepherd Puppies with Structured Placement and Training Support",
+      "reasonForRewrite": "A stronger hero headline helps visitors understand the offer immediately and improves first-impression clarity.",
+      "alternateVersion": "Confident German Shepherd Puppies Matched to the Right Home"
+    },
+    {
+      "id": "hero_supporting_paragraph-baseline-hero-support-rewrite",
+      "sectionName": "hero_supporting_paragraph",
+      "sourceInsightTitle": "Baseline hero support rewrite",
+      "currentWording": "Das Müller Kennel",
+      "improvedRewrite": "Patriot K9 Kennel helps serious homes find the right German Shepherd through structured placement, clear standards, and training support that continues after pickup day.",
+      "reasonForRewrite": "Supporting copy should build trust quickly and explain why the visitor should keep reading or apply.",
+      "alternateVersion": "We focus on matching each German Shepherd puppy to the right home with guidance, accountability, and long-term support."
+    },
+    {
+      "id": "primary_cta_text-application-flow-may-feel-heavy-before-enough-reassurance-is-established",
+      "sectionName": "primary_cta_text",
+      "sourceInsightTitle": "Application flow may feel heavy before enough reassurance is established",
+      "currentWording": "Apply",
+      "improvedRewrite": "Apply for the Right Puppy Match",
+      "reasonForRewrite": "If visitors hit a long application flow too early, they may drop off before building confidence in the brand and offer.",
+      "alternateVersion": "Start Your Puppy Application"
+    }
+  ]
+}

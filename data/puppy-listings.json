@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-04-09T23:31:46.499Z",
+  "activeBatchId": "puppy-listing-batch-1775777506497",
+  "drafts": [
+    {
+      "id": "puppy-listing-petra-purple-collar-female-ana-adolf-reserved-1775777506499",
+      "batchId": "puppy-listing-batch-1775777506497",
+      "status": "sold_or_reserved",
+      "createdAt": "2026-04-09T23:31:46.499Z",
+      "updatedAt": "2026-04-09T23:32:02.028Z",
+      "puppyName": "Petra (purple collar)",
+      "sex": "Female",
+      "age": "5 weeks",
+      "litter": "Ana & Adolf",
+      "availability": "reserved",
+      "temperamentNotes": "She was very vocal at first, but she calmed down pretty quickly. Second day with her she already was quiet and more observant of surroundings and not overstimulated.",
+      "breederNotes": "Smart, will do well with constructive training, and loyal.",
+      "listingTitle": "Petra (purple collar) | Reserved Female Puppy",
+      "shortSummary": "Petra (purple collar) is a female puppy 5 weeks old from the Ana & Adolf litter showing She was very vocal at first, but she calmed down pretty quickly. Second day with her she already was quiet and more observant of surroundings and not overstimulated..",
+      "fullDescription": "Petra (purple collar) is currently marked reserved. Female puppy, 5 weeks old. Raised as part of the Ana & Adolf litter.\n\nTemperament notes: She was very vocal at first, but she calmed down pretty quickly. Second day with her she already was quiet and more observant of surroundings and not overstimulated..\n\nBreeder notes: Smart, will do well with constructive training, and loyal..",
+      "homepageCardCopy": "Petra (purple collar) • 5 weeks old • Temperament: She was very vocal at first, but she calmed down pretty quickly. Second day with her she already was quiet and more observant of surroundings and not overstimulated. • Status: Reserved",
+      "suggestedSlug": "petra-purple-collar-female-ana-adolf-reserved",
+      "images": [
+        {
+          "id": "fe32504f-9067-4265-855e-a9372c1fa129",
+          "fileName": "petra-(purple-collar)-1775777506497-f516cec6.jpeg",
+          "publicUrl": "/uploads/puppy-listings/petra-(purple-collar)-1775777506497-f516cec6.jpeg",
+          "altText": "Petra (purple collar) Female puppy from the Ana & Adolf litter reserved photo 1"
+        }
+      ]
+    }
+  ],
+  "consumedDrafts": [],
+  "archivedDrafts": []
+}

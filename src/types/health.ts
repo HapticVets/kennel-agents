@@ -72,8 +72,20 @@ export type ContentDraftType =
   | "puppy_listing_template"
   | "announcement_post";
 
+export type ContentDraftStatus =
+  | "draft"
+  | "approved"
+  | "placed"
+  | "published"
+  | "consumed"
+  | "archived";
+
 export interface ContentDraft {
   id: string;
+  batchId: string;
+  status: ContentDraftStatus;
+  createdAt: string;
+  updatedAt: string;
   title: string;
   contentType: ContentDraftType;
   purpose: string;
@@ -85,7 +97,11 @@ export interface ContentDraft {
 
 export interface ContentDraftReport {
   generatedAt: string;
+  activeBatchId: string;
   drafts: ContentDraft[];
+  publishedDrafts: ContentDraft[];
+  consumedDrafts: ContentDraft[];
+  archivedDrafts: ContentDraft[];
 }
 
 export type ConversionInsightCategory =
@@ -114,9 +130,17 @@ export interface ConversionInsightReport {
 export type ApprovalSourceType =
   | "proposed_fix"
   | "content_draft"
-  | "conversion_insight";
+  | "puppy_listing"
+  | "conversion_insight"
+  | "optimization_insight"
+  | "section_rewrite";
 
-export type ApprovalStatus = "pending" | "approved" | "rejected";
+export type ApprovalStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "published"
+  | "consumed";
 
 export interface ApprovalState {
   itemId: string;
@@ -129,6 +153,7 @@ export interface ApprovalQueueItem {
   itemId: string;
   sourceType: ApprovalSourceType;
   status: ApprovalStatus;
+  updatedAt?: string;
   title: string;
   pageUrl?: string;
   severity?: Severity;
@@ -228,4 +253,257 @@ export interface VerificationRecord {
 export interface VerificationReport {
   generatedAt: string;
   records: VerificationRecord[];
+}
+
+export type OptimizationInsightCategory =
+  | "SEO"
+  | "CTA"
+  | "Trust"
+  | "UX"
+  | "Content";
+
+export interface OptimizationInsight {
+  id: string;
+  issueTitle: string;
+  category: OptimizationInsightCategory;
+  severity: Severity;
+  whyItMatters: string;
+  recommendedImprovement: string;
+  improvementExample: string;
+}
+
+export interface OptimizationInsightReport {
+  generatedAt: string;
+  pageUrl: string;
+  insights: OptimizationInsight[];
+}
+
+export type RewriteSectionName =
+  | "seo_title"
+  | "meta_description"
+  | "hero_headline"
+  | "hero_supporting_paragraph"
+  | "primary_cta_text";
+
+export interface SectionRewriteDraft {
+  id: string;
+  sectionName: RewriteSectionName;
+  sourceInsightTitle: string;
+  currentWording?: string;
+  improvedRewrite: string;
+  reasonForRewrite: string;
+  alternateVersion?: string;
+}
+
+export interface SectionRewriteReport {
+  generatedAt: string;
+  pageUrl: string;
+  drafts: SectionRewriteDraft[];
+}
+
+export type OptimizationMergeStatus =
+  | "ready"
+  | "applied"
+  | "skipped"
+  | "unmatched"
+  | "failed";
+
+export interface OptimizationMergeItem {
+  itemId: string;
+  sourceType: "section_rewrite";
+  title: string;
+  sectionName: RewriteSectionName;
+  targetFile: string;
+  targetField: string;
+  currentValue: string;
+  proposedReplacement: string;
+  diffPreview: string;
+  status: OptimizationMergeStatus;
+  message?: string;
+}
+
+export interface OptimizationMergeResult {
+  itemId: string;
+  sourceType: "section_rewrite";
+  targetFile: string;
+  targetField: string;
+  status: OptimizationMergeStatus;
+  diffPreview: string;
+  updatedAt: string;
+  message?: string;
+}
+
+export interface OptimizationMergeReport {
+  generatedAt: string;
+  items: OptimizationMergeItem[];
+}
+
+export interface DeployChangedFile {
+  path: string;
+  statusCode: string;
+  summary: string;
+}
+
+export type DeployActionStatus = "idle" | "success" | "failed";
+
+export interface DeployActionState {
+  status: DeployActionStatus;
+  message: string;
+  updatedAt: string;
+}
+
+export interface DeployStatusReport {
+  generatedAt: string;
+  repoPath: string;
+  currentBranch: string;
+  gitStatusSummary: string;
+  isClean: boolean;
+  isAheadOfRemote: boolean;
+  changedFiles: DeployChangedFile[];
+  suggestedCommitMessage: string;
+  commitStatus: DeployActionState;
+  pushStatus: DeployActionState;
+  publishStatus: DeployActionState;
+  readyForVerification: boolean;
+  lastPublishResult: string;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export type FaqPlacementStatus = "ready" | "applied" | "skipped" | "failed";
+
+export interface FaqPlacementItem {
+  itemId: string;
+  sourceType: "content_draft";
+  title: string;
+  targetFile: string;
+  currentFaqState: string;
+  proposedFaqItems: FaqItem[];
+  diffPreview: string;
+  status: FaqPlacementStatus;
+  message?: string;
+}
+
+export interface FaqPlacementReport {
+  generatedAt: string;
+  items: FaqPlacementItem[];
+}
+
+export type OperatorSuggestionSource =
+  | "optimization_insight"
+  | "section_rewrite"
+  | "content_draft";
+
+export interface OperatorHealthSummary {
+  lastRunAt: string;
+  issues: number;
+  opportunities: number;
+  verificationSummary: string;
+  issueHighlights: string[];
+  opportunityHighlights: string[];
+}
+
+export interface OperatorSuggestionItem {
+  itemId: string;
+  sourceType: OperatorSuggestionSource;
+  status: ApprovalStatus;
+  title: string;
+  shortExplanation: string;
+  preview?: string;
+}
+
+export interface OperatorApplyItem {
+  itemId: string;
+  sourceType: OperatorSuggestionSource;
+  title: string;
+  readiness: string;
+}
+
+export interface OperatorReleaseSummary {
+  approvedItems: OperatorApplyItem[];
+  changedFiles: DeployChangedFile[];
+  status: "idle" | "success" | "failed";
+  message: string;
+}
+
+export interface OperatorDashboardReport {
+  generatedAt: string;
+  health: OperatorHealthSummary;
+  suggestions: {
+    items: OperatorSuggestionItem[];
+  };
+  release: OperatorReleaseSummary;
+}
+
+export type PuppyListingAvailability = "available" | "reserved" | "sold";
+
+export type PuppyListingDraftStatus =
+  | "draft"
+  | "approved"
+  | "ready_for_placement"
+  | "applied"
+  | "deployed"
+  | "live_on_site"
+  | "active_on_site"
+  | "sold_or_reserved"
+  | "archived";
+
+export interface PuppyListingImage {
+  id: string;
+  fileName: string;
+  publicUrl: string;
+  altText: string;
+}
+
+export interface PuppyListingDraft {
+  id: string;
+  batchId: string;
+  status: PuppyListingDraftStatus;
+  createdAt: string;
+  updatedAt: string;
+  puppyName: string;
+  sex: string;
+  age: string;
+  litter: string;
+  availability: PuppyListingAvailability;
+  temperamentNotes: string;
+  breederNotes: string;
+  priceOrDeposit?: string;
+  listingTitle: string;
+  shortSummary: string;
+  fullDescription: string;
+  homepageCardCopy: string;
+  suggestedSlug: string;
+  images: PuppyListingImage[];
+}
+
+export interface PuppyListingReport {
+  generatedAt: string;
+  activeBatchId: string;
+  drafts: PuppyListingDraft[];
+  consumedDrafts: PuppyListingDraft[];
+  archivedDrafts: PuppyListingDraft[];
+}
+
+export type PuppyPlacementStatus = "ready" | "applied" | "skipped" | "failed";
+
+export interface PuppyPlacementItem {
+  itemId: string;
+  sourceType: "puppy_listing";
+  title: string;
+  targetFile: string;
+  currentSectionState: string;
+  listingPreview: string;
+  diffPreview: string;
+  status: PuppyPlacementStatus;
+  updatedAt?: string;
+  message?: string;
+}
+
+export interface PuppyPlacementReport {
+  generatedAt: string;
+  items: PuppyPlacementItem[];
 }

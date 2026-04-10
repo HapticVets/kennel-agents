@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-04-09T21:24:54.830Z",
+  "pageUrl": "https://www.patriotk9kennel.com",
+  "insights": [
+    {
+      "id": "seo-homepage-title-may-be-weak-for-search-visibility",
+      "issueTitle": "Homepage title may be weak for search visibility",
+      "category": "SEO",
+      "severity": "high",
+      "whyItMatters": "A title that is missing, too short, or too long can reduce relevance and click-through performance in search results.",
+      "recommendedImprovement": "Use a title that clearly combines brand, offering, and buyer intent in a concise format.",
+      "improvementExample": "Example improvement: Das Muller German Shepherds | Puppies, Training, and Structured Placement"
+    },
+    {
+      "id": "seo-meta-description-may-not-be-optimized-for-click-through",
+      "issueTitle": "Meta description may not be optimized for click-through",
+      "category": "SEO",
+      "severity": "medium",
+      "whyItMatters": "Search users often rely on the description to decide whether to click, so weak length or clarity can lower engagement.",
+      "recommendedImprovement": "Write a concise description that explains the homepage offer and why a visitor should act.",
+      "improvementExample": "Example improvement: Purpose-bred German Shepherd puppies, structured placement, and training support for serious homes ready to apply."
+    },
+    {
+      "id": "cta-cta-language-is-present-but-can-be-made-more-outcome-focused",
+      "issueTitle": "CTA language is present but can be made more outcome-focused",
+      "category": "CTA",
+      "severity": "low",
+      "whyItMatters": "Clear CTA wording helps visitors understand the value of clicking rather than just the action itself.",
+      "recommendedImprovement": "Refine CTA labels to connect the action with the visitor’s goal.",
+      "improvementExample": "Example improvement: change a generic CTA to 'Apply for the Right Puppy Match' or 'Start Structured Training'."
+    },
+    {
+      "id": "ux-application-flow-may-feel-heavy-before-enough-reassurance-is-established",
+      "issueTitle": "Application flow may feel heavy before enough reassurance is established",
+      "category": "UX",
+      "severity": "medium",
+      "whyItMatters": "If visitors hit a long application flow too early, they may drop off before building confidence in the brand and offer.",
+      "recommendedImprovement": "Add stronger trust and expectation-setting copy before the application section or break the form into a softer pre-qualification path.",
+      "improvementExample": "Example improvement: add a short 'What to expect before applying' section above the form."
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "generatedAt": "2026-04-09T18:53:01.174Z",
+  "items": [
+    {
+      "itemId": "seo_title-baseline-homepage-title-rewrite",
+      "sourceType": "section_rewrite",
+      "title": "Baseline homepage title rewrite",
+      "sectionName": "seo_title",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\app\\layout.tsx",
+      "targetField": "metadata.title",
+      "currentValue": "Das Muller German Shepherds | Structured Training and Puppy Placement",
+      "proposedReplacement": "German Shepherd Puppies for Sale | Structured Training & Placement | Patriot K9 Kennel",
+      "diffPreview": "--- Current\nDas Muller German Shepherds | Structured Training and Puppy Placement\n\n+++ Proposed\nGerman Shepherd Puppies for Sale | Structured Training & Placement | Patriot K9 Kennel",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "meta_description-baseline-meta-description-rewrite",
+      "sourceType": "section_rewrite",
+      "title": "Baseline meta description rewrite",
+      "sectionName": "meta_description",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\app\\layout.tsx",
+      "targetField": "metadata.description",
+      "currentValue": "Purpose-bred German Shepherds, structured puppy placement, and training support for serious homes.",
+      "proposedReplacement": "Purpose-bred German Shepherd puppies with structured placement, proven training foundations, and ongoing support. Apply today to secure your dog.",
+      "diffPreview": "--- Current\nPurpose-bred German Shepherds, structured puppy placement, and training support for serious homes.\n\n+++ Proposed\nPurpose-bred German Shepherd puppies with structured placement, proven training foundations, and ongoing support. Apply today to secure your dog.",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "hero_headline-baseline-hero-headline-rewrite",
+      "sourceType": "section_rewrite",
+      "title": "Baseline hero headline rewrite",
+      "sectionName": "hero_headline",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "targetField": "hero heading",
+      "currentValue": "Purpose-bred German Shepherds. Structured training. Veteran-driven mission.",
+      "proposedReplacement": "Purpose-Bred German Shepherds Trained and Matched for the Right Home",
+      "diffPreview": "--- Current\nPurpose-bred German Shepherds. Structured training. Veteran-driven mission.\n\n+++ Proposed\nPurpose-Bred German Shepherds Trained and Matched for the Right Home",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "primary_cta_text-baseline-primary-cta-rewrite",
+      "sourceType": "section_rewrite",
+      "title": "Baseline primary CTA rewrite",
+      "sectionName": "primary_cta_text",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "targetField": "hero primary CTA",
+      "currentValue": "Apply for a Puppy",
+      "proposedReplacement": "Start Your Puppy Application",
+      "diffPreview": "--- Current\nApply for a Puppy\n\n+++ Proposed\nStart Your Puppy Application",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "hero_supporting_paragraph-baseline-hero-support-rewrite",
+      "sourceType": "section_rewrite",
+      "title": "Baseline hero support rewrite",
+      "sectionName": "hero_supporting_paragraph",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "targetField": "hero supporting paragraph",
+      "currentValue": "Das Müller is built to place the right German Shepherd in the right home, backed by structure, screening, and a training path that continues beyond pickup day.",
+      "proposedReplacement": "Patriot K9 Kennel provides purpose-bred German Shepherd puppies with structured placement, clear training standards, and support that continues long after pickup. Every dog is raised, evaluated, and matched with intention.",
+      "diffPreview": "--- Current\nDas Müller is built to place the right German Shepherd in the right home, backed by structure, screening, and a training path that continues beyond pickup day.\n\n+++ Proposed\nPatriot K9 Kennel provides purpose-bred German Shepherd puppies with structured placement, clear training standards, and support that continues long after pickup. Every dog is raised, evaluated, and matched with intention.",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "seo_title-homepage-title-may-be-weak-for-search-visibility",
+      "sourceType": "section_rewrite",
+      "title": "Homepage title may be weak for search visibility",
+      "sectionName": "seo_title",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\app\\layout.tsx",
+      "targetField": "metadata.title",
+      "currentValue": "German Shepherd Puppies for Sale | Structured Training & Placement | Patriot K9 Kennel",
+      "proposedReplacement": "German Shepherd Puppies for Sale | Structured Training & Placement | Patriot K9 Kennel",
+      "diffPreview": "--- Current\nGerman Shepherd Puppies for Sale | Structured Training & Placement | Patriot K9 Kennel\n\n+++ Proposed\nGerman Shepherd Puppies for Sale | Structured Training & Placement | Patriot K9 Kennel",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "meta_description-meta-description-may-not-be-optimized-for-click-through",
+      "sourceType": "section_rewrite",
+      "title": "Meta description may not be optimized for click-through",
+      "sectionName": "meta_description",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\app\\layout.tsx",
+      "targetField": "metadata.description",
+      "currentValue": "Purpose-bred German Shepherd puppies with structured placement, proven training foundations, and ongoing support. Apply today to secure your dog.",
+      "proposedReplacement": "Purpose-bred German Shepherd puppies with structured placement, proven training foundations, and ongoing support. Apply today to secure your dog.",
+      "diffPreview": "--- Current\nPurpose-bred German Shepherd puppies with structured placement, proven training foundations, and ongoing support. Apply today to secure your dog.\n\n+++ Proposed\nPurpose-bred German Shepherd puppies with structured placement, proven training foundations, and ongoing support. Apply today to secure your dog.",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "primary_cta_text-cta-language-is-present-but-can-be-made-more-outcome-focused",
+      "sourceType": "section_rewrite",
+      "title": "CTA language is present but can be made more outcome-focused",
+      "sectionName": "primary_cta_text",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "targetField": "hero primary CTA",
+      "currentValue": "Start Your Puppy Application",
+      "proposedReplacement": "Start Your Puppy Application",
+      "diffPreview": "--- Current\nStart Your Puppy Application\n\n+++ Proposed\nStart Your Puppy Application",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    },
+    {
+      "itemId": "primary_cta_text-application-flow-may-feel-heavy-before-enough-reassurance-is-established",
+      "sourceType": "section_rewrite",
+      "title": "Application flow may feel heavy before enough reassurance is established",
+      "sectionName": "primary_cta_text",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "targetField": "hero primary CTA",
+      "currentValue": "Start Your Puppy Application",
+      "proposedReplacement": "Start Your Puppy Application",
+      "diffPreview": "--- Current\nStart Your Puppy Application\n\n+++ Proposed\nStart Your Puppy Application",
+      "status": "applied",
+      "message": "Optimization rewrite was merged into the real site file."
+    }
+  ]
+}

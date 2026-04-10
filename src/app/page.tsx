@@ -9,7 +9,7 @@ export default function HomePage() {
         <p className="muted">
           Phase 3 includes health findings, proposed fixes, and draft content generation.
         </p>
-        <Link className="button" href="/admin">
+        <Link className="button" href="/admin/operator">
           Open admin dashboard
         </Link>
       </div>

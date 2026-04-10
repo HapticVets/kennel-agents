@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+import { ApprovalControls } from "@/components/approval-controls";
 import { AdminNav } from "@/components/admin-nav";
-import type { FindingCategory, ProposedFix, ProposedFixReport } from "@/types/health";
+import type {
+  ApprovalQueueReport,
+  ApprovalStatus,
+  FindingCategory,
+  ProposedFix,
+  ProposedFixReport
+} from "@/types/health";
 
 const categoryLabels: Record<FindingCategory, string> = {
   availability: "Availability",
@@ -21,21 +28,35 @@ const emptyReport: ProposedFixReport = {
 
 export default function ProposedFixesPage() {
   const [report, setReport] = useState<ProposedFixReport>(emptyReport);
+  const [approvalStatuses, setApprovalStatuses] = useState<Record<string, ApprovalStatus>>({});
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [updatingKey, setUpdatingKey] = useState("");
 
   useEffect(() => {
-    async function loadReport() {
+    async function loadPageData() {
       try {
-        const response = await fetch("/api/proposed-fixes", { cache: "no-store" });
-        const data = (await response.json()) as ProposedFixReport;
+        const [reportResponse, approvalsResponse] = await Promise.all([
+          fetch("/api/proposed-fixes", { cache: "no-store" }),
+          fetch("/api/approvals", { cache: "no-store" })
+        ]);
+        const data = (await reportResponse.json()) as ProposedFixReport;
+        const approvalData = (await approvalsResponse.json()) as ApprovalQueueReport;
+
         setReport(data);
+        setApprovalStatuses(
+          Object.fromEntries(
+            approvalData.items
+              .filter((item) => item.sourceType === "proposed_fix")
+              .map((item) => [item.itemId, item.status])
+          )
+        );
       } finally {
         setLoading(false);
       }
     }
 
-    void loadReport();
+    void loadPageData();
   }, []);
 
   async function generateDrafts() {
@@ -48,12 +69,61 @@ export default function ProposedFixesPage() {
       });
       const data = (await response.json()) as ProposedFixReport;
       setReport(data);
+      setApprovalStatuses((current) => {
+        const next = { ...current };
+
+        data.fixes.forEach((fix) => {
+          if (!next[fix.id]) {
+            next[fix.id] = "pending";
+          }
+        });
+
+        return next;
+      });
     } finally {
       setGenerating(false);
     }
   }
 
-  const fixesByCategory = report.fixes.reduce<Record<FindingCategory, ProposedFix[]>>(
+  async function updateApproval(itemId: string, status: ApprovalStatus) {
+    const key = `${itemId}-${status}`;
+    setUpdatingKey(key);
+
+    try {
+      const response = await fetch("/api/approvals", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          itemId,
+          sourceType: "proposed_fix",
+          status
+        })
+      });
+      const data = (await response.json()) as ApprovalQueueReport;
+
+      setApprovalStatuses(
+        Object.fromEntries(
+          data.items
+            .filter((item) => item.sourceType === "proposed_fix")
+            .map((item) => [item.itemId, item.status])
+        )
+      );
+    } finally {
+      setUpdatingKey("");
+    }
+  }
+
+  // Rejected fix drafts stay in storage and approval history, but the default
+  // fix queue hides them so the operator sees only active suggestions.
+  const activeFixes = report.fixes.filter(
+    (fix) =>
+      approvalStatuses[fix.id] !== "rejected" &&
+      approvalStatuses[fix.id] !== "published"
+  );
+
+  const fixesByCategory = activeFixes.reduce<Record<FindingCategory, ProposedFix[]>>(
     (groups, fix) => {
       groups[fix.category].push(fix);
       return groups;
@@ -98,13 +168,13 @@ export default function ProposedFixesPage() {
 
         {loading ? <p className="muted">Loading proposed fixes...</p> : null}
 
-        {!loading && report.fixes.length === 0 ? (
+        {!loading && activeFixes.length === 0 ? (
           <p className="muted">
             No proposed fixes stored yet. Generate draft fixes from the latest health findings.
           </p>
         ) : null}
 
-        {!loading && report.fixes.length > 0 ? (
+        {!loading && activeFixes.length > 0 ? (
           <div className="group-list">
             {(Object.entries(fixesByCategory) as [FindingCategory, ProposedFix[]][])
               .filter(([, fixes]) => fixes.length > 0)
@@ -121,6 +191,12 @@ export default function ProposedFixesPage() {
                           <span className={`badge badge-${fix.severity}`}>{fix.severity}</span>
                           <span className="finding-type">{fix.category}</span>
                         </div>
+                        <ApprovalControls
+                          busy={updatingKey === `${fix.id}-approved` || updatingKey === `${fix.id}-rejected`}
+                          onApprove={() => updateApproval(fix.id, "approved")}
+                          onReject={() => updateApproval(fix.id, "rejected")}
+                          status={approvalStatuses[fix.id] ?? "pending"}
+                        />
                         <h3>{fix.issueTitle}</h3>
                         <p className="finding-url">{fix.pageUrl}</p>
                         <div className="fix-content">

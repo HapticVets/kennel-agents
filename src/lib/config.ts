@@ -1,5 +1,6 @@
 // Central place for Phase 1 configuration so the agent is easy to evolve later.
-export const SITE_URL = "https://patriotk9kennel.com";
+// Use www domain for stability (avoids apex SSL + bot detection issues)
+export const SITE_URL = "https://www.patriotk9kennel.com";
 export const TARGET_SITE_PATH = "C:\\Users\\jrees\\das-muller-website";
 
 // We keep the crawl intentionally small for a high-confidence first phase.

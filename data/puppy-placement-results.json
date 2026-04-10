@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-10T03:00:37.037Z",
+  "items": [
+    {
+      "itemId": "puppy-listing-petra-purple-collar-female-ana-adolf-reserved-1775769860265",
+      "sourceType": "puppy_listing",
+      "title": "Petra (purple collar) | Reserved Female Puppy",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "currentSectionState": "No puppy listings section exists yet.",
+      "listingPreview": "Petra (purple collar) (reserved)\nPetra (purple collar) is a female puppy 5 weeks old from the Ana & Adolf litter showing She was loud at first but calmed down, seemed like she was over stimulated at first but quickly calmed down and just stayed more observant..\nPetra (purple collar) • 5 weeks old • Temperament: She was loud at first but calmed down, seemed like she was over stimulated at first but quickly calmed down and just stayed more observant. • Status: Reserved",
+      "diffPreview": "--- Current\nNo puppy listings section exists yet.\n\n+++ Proposed\nPetra (purple collar) (reserved)\nPetra (purple collar) is a female puppy 5 weeks old from the Ana & Adolf litter showing She was loud at first but calmed down, seemed like she was over stimulated at first but quickly calmed down and just stayed more observant..\nPetra (purple collar) • 5 weeks old • Temperament: She was loud at first but calmed down, seemed like she was over stimulated at first but quickly calmed down and just stayed more observant. • Status: Reserved",
+      "status": "applied",
+      "message": "Approved puppy listings were merged into the homepage component."
+    },
+    {
+      "itemId": "puppy-listing-petra-purple-collar-female-adolf-ana-reserved-1775787551591",
+      "sourceType": "puppy_listing",
+      "title": "Petra (purple collar) | Reserved Female Puppy",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "currentSectionState": "No puppy listings section exists yet.",
+      "listingPreview": "Petra (purple collar) (reserved)\nPetra (purple collar) is a female puppy 5 weeks old from the Adolf & Ana litter showing She was vocal at first that seemed like overstimulated first time out alone, the second time she was quiet and she was just more observant of her surroundings..\nPetra (purple collar) • 5 weeks old • Temperament: She was vocal at first that seemed like overstimulated first time out alone, the second time she was quiet and she was just more observant of her surroundings. • Status: Reserved",
+      "diffPreview": "--- Current\nNo puppy listings section exists yet.\n\n+++ Proposed\nPetra (purple collar) (reserved)\nPetra (purple collar) is a female puppy 5 weeks old from the Adolf & Ana litter showing She was vocal at first that seemed like overstimulated first time out alone, the second time she was quiet and she was just more observant of her surroundings..\nPetra (purple collar) • 5 weeks old • Temperament: She was vocal at first that seemed like overstimulated first time out alone, the second time she was quiet and she was just more observant of her surroundings. • Status: Reserved",
+      "status": "failed",
+      "updatedAt": "2026-04-10T03:00:37.037Z",
+      "message": "Source puppy image is missing: C:\\Users\\jrees\\Desktop\\kennel-agents\\public\\uploads\\puppy-listings\\petra-(purple-collar)-1775787551586-9f192c99.jpeg"
+    }
+  ]
+}

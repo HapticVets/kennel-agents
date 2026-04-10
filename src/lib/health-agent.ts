@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import { chromium } from "playwright";
 
 import { MAX_LINK_CHECKS, MAX_PAGES, SITE_URL } from "@/lib/config";
 import type {
@@ -10,6 +11,10 @@ import type {
 } from "@/types/health";
 
 const seoDebugEnabled = process.env.KENNEL_HEALTH_DEBUG === "true";
+const browserUserAgent =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36";
+const browserAcceptHeader = "text/html,application/xhtml+xml";
+const homepageRetryAttempts = 3;
 
 function getCategory(type: HealthFinding["type"]): FindingCategory {
   switch (type) {
@@ -77,12 +82,101 @@ async function fetchPage(url: string): Promise<{
   html: string | null;
   finalUrl?: string;
   contentType?: string;
+  provider?: "playwright" | "fetch";
+  error?: string;
+}> {
+  const playwrightResult = await fetchPageWithPlaywright(url);
+
+  if (playwrightResult) {
+    return playwrightResult;
+  }
+
+  return fetchPageWithFetch(url);
+}
+
+async function fetchPageWithPlaywright(url: string): Promise<{
+  status: number | null;
+  html: string | null;
+  finalUrl?: string;
+  contentType?: string;
+  provider: "playwright";
+  error?: string;
+} | null> {
+  try {
+    const browser = await chromium.launch({
+      headless: true
+    });
+    const context = await browser.newContext({
+      userAgent: browserUserAgent
+    });
+    const page = await context.newPage();
+    const response = await page.goto(url, {
+      waitUntil: "networkidle",
+      timeout: 30000
+    });
+
+    const html = await page.content();
+    const finalUrl = page.url();
+    const status = response?.status() ?? 200;
+    const contentType = response?.headers()["content-type"] ?? "text/html";
+
+    if (seoDebugEnabled) {
+      const $ = cheerio.load(html);
+      const seoFields = extractSeoFields(html, $);
+
+      console.log("[KennelHealthAgent][Fetch]", {
+        provider: "playwright",
+        requestedUrl: url,
+        finalUrl,
+        status,
+        contentType,
+        bodyPreview: html.slice(0, 500) ?? ""
+      });
+
+      console.log("[KennelHealthAgent][SEOProvider]", {
+        provider: "playwright",
+        finalUrl,
+        detectedTitle: seoFields.title ?? "",
+        detectedMetaDescription: seoFields.metaDescription ?? ""
+      });
+    }
+
+    await page.close();
+    await context.close();
+    await browser.close();
+
+    return {
+      status,
+      html,
+      finalUrl,
+      contentType,
+      provider: "playwright"
+    };
+  } catch (error) {
+    if (seoDebugEnabled) {
+      console.log("[KennelHealthAgent][PlaywrightFallback]", {
+        requestedUrl: url,
+        error: error instanceof Error ? error.message : "Unknown Playwright error."
+      });
+    }
+
+    return null;
+  }
+}
+
+async function fetchPageWithFetch(url: string): Promise<{
+  status: number | null;
+  html: string | null;
+  finalUrl?: string;
+  contentType?: string;
+  provider: "fetch";
   error?: string;
 }> {
   try {
     const response = await fetch(url, {
       headers: {
-        "user-agent": "KennelHealthAgent/0.1"
+        "user-agent": browserUserAgent,
+        accept: browserAcceptHeader
       },
       cache: "no-store"
     });
@@ -105,7 +199,8 @@ async function fetchPage(url: string): Promise<{
 
       const redirectedResponse = await fetch(redirectTarget, {
         headers: {
-          "user-agent": "KennelHealthAgent/0.1"
+          "user-agent": browserUserAgent,
+          accept: browserAcceptHeader
         },
         cache: "no-store"
       });
@@ -126,12 +221,23 @@ async function fetchPage(url: string): Promise<{
     }
 
     if (seoDebugEnabled) {
+      const $ = html ? cheerio.load(html) : cheerio.load("");
+      const seoFields = html ? extractSeoFields(html, $) : {};
+
       console.log("[KennelHealthAgent][Fetch]", {
+        provider: "fetch",
         requestedUrl: url,
         finalUrl,
         status: finalStatus,
         contentType: finalContentType,
         bodyPreview: html?.slice(0, 500) ?? ""
+      });
+
+      console.log("[KennelHealthAgent][SEOProvider]", {
+        provider: "fetch",
+        finalUrl,
+        detectedTitle: seoFields.title ?? "",
+        detectedMetaDescription: seoFields.metaDescription ?? ""
       });
     }
 
@@ -139,12 +245,14 @@ async function fetchPage(url: string): Promise<{
       status: finalStatus,
       html,
       finalUrl,
-      contentType: finalContentType
+      contentType: finalContentType,
+      provider: "fetch"
     };
   } catch (error) {
     return {
       status: null,
       html: null,
+      provider: "fetch",
       error: error instanceof Error ? error.message : "Unknown request error."
     };
   }
@@ -282,7 +390,7 @@ async function checkImageAvailability(
     const response = await fetch(imageUrl, {
       method: "HEAD",
       headers: {
-        "user-agent": "KennelHealthAgent/0.1"
+        "user-agent": browserUserAgent
       },
       cache: "no-store"
     });
@@ -306,7 +414,7 @@ export async function runKennelHealthAgent(): Promise<HealthReport> {
 
   // Phase 1 starts from the homepage and fans out to a very small internal sample.
   // That keeps scans quick and predictable while we prove the structure.
-  const homepage = await scanPage(SITE_URL);
+  const homepage = await scanHomepageWithRetries();
 
   if (!homepage.available) {
     findings.push(
@@ -470,4 +578,65 @@ export async function runKennelHealthAgent(): Promise<HealthReport> {
     baseUrl: SITE_URL,
     findings
   };
+}
+
+async function scanHomepageWithRetries(): Promise<PageScanResult> {
+  let lastResult: PageScanResult | null = null;
+  let lastFailureReason = "Unknown homepage failure.";
+
+  for (let attempt = 1; attempt <= homepageRetryAttempts; attempt += 1) {
+    if (seoDebugEnabled) {
+      console.log("[KennelHealthAgent][HomepageRetry]", {
+        attempt,
+        maxAttempts: homepageRetryAttempts,
+        url: SITE_URL
+      });
+    }
+
+    try {
+      const result = await scanPage(SITE_URL);
+      lastResult = result;
+
+      if (result.available) {
+        return result;
+      }
+
+      lastFailureReason = result.status
+        ? `Received HTTP ${result.status}.`
+        : "Request failed.";
+
+      const shouldRetry =
+        attempt < homepageRetryAttempts &&
+        (!result.status || result.status >= 500 || result.status === 403);
+
+      if (!shouldRetry) {
+        break;
+      }
+    } catch (error) {
+      lastFailureReason =
+        error instanceof Error ? error.message : "Unknown homepage scan error.";
+
+      if (attempt === homepageRetryAttempts) {
+        break;
+      }
+    }
+  }
+
+  if (seoDebugEnabled) {
+    console.log("[KennelHealthAgent][HomepageFailure]", {
+      url: SITE_URL,
+      attempts: homepageRetryAttempts,
+      finalFailureReason: lastFailureReason
+    });
+  }
+
+  return (
+    lastResult ?? {
+      url: SITE_URL,
+      status: null,
+      available: false,
+      internalLinks: [],
+      imageUrls: []
+    }
+  );
 }

@@ -7,6 +7,8 @@ import type {
 const siteName = "Patriot K9 Kennel";
 
 function buildDraft(
+  batchId: string,
+  generatedAt: string,
   contentType: ContentDraftType,
   title: string,
   purpose: string,
@@ -17,6 +19,10 @@ function buildDraft(
 ): ContentDraft {
   return {
     id: `${contentType}-${title}`.replace(/[^a-zA-Z0-9-_:/.]/g, "-").toLowerCase(),
+    batchId,
+    status: "draft",
+    createdAt: generatedAt,
+    updatedAt: generatedAt,
     title,
     contentType,
     purpose,
@@ -27,10 +33,13 @@ function buildDraft(
   };
 }
 
-export async function runContentAgent(): Promise<ContentDraftReport> {
+export async function runContentAgent(batchId: string): Promise<ContentDraftReport> {
   // Phase 3 generates reusable copy ideas only. It does not write to any live site content.
+  const generatedAt = new Date().toISOString();
   const drafts: ContentDraft[] = [
     buildDraft(
+      batchId,
+      generatedAt,
       "homepage_hero",
       "Homepage Hero: Trusted K9 Training and Quality Puppies",
       "Give the homepage a strong opening message that explains the kennel clearly.",
@@ -40,6 +49,8 @@ export async function runContentAgent(): Promise<ContentDraftReport> {
       "View training options"
     ),
     buildDraft(
+      batchId,
+      generatedAt,
       "cta_section",
       "CTA Section: Start Your Dog's Next Step",
       "Encourage visitors to take a clear next action after reading key sections.",
@@ -49,6 +60,8 @@ export async function runContentAgent(): Promise<ContentDraftReport> {
       "Request information"
     ),
     buildDraft(
+      batchId,
+      generatedAt,
       "faq_items",
       "FAQ Draft Set: Common Questions for New Clients",
       "Answer common questions before visitors need to contact the kennel.",
@@ -58,6 +71,8 @@ export async function runContentAgent(): Promise<ContentDraftReport> {
       "Ask a question"
     ),
     buildDraft(
+      batchId,
+      generatedAt,
       "service_training_copy",
       "Service Section: Structured Training with Clear Goals",
       "Explain the kennel's training value in a focused service section.",
@@ -67,6 +82,8 @@ export async function runContentAgent(): Promise<ContentDraftReport> {
       "Explore training services"
     ),
     buildDraft(
+      batchId,
+      generatedAt,
       "puppy_listing_template",
       "Puppy Listing Template: Available Puppy Overview",
       "Provide a reusable draft template for individual puppy listings.",
@@ -76,6 +93,8 @@ export async function runContentAgent(): Promise<ContentDraftReport> {
       "Ask about this puppy"
     ),
     buildDraft(
+      batchId,
+      generatedAt,
       "announcement_post",
       "Announcement Post: New Update from Patriot K9 Kennel",
       "Share timely news in a simple post format that can be edited for different updates.",
@@ -87,7 +106,11 @@ export async function runContentAgent(): Promise<ContentDraftReport> {
   ];
 
   return {
-    generatedAt: new Date().toISOString(),
-    drafts
+    generatedAt,
+    activeBatchId: batchId,
+    drafts,
+    publishedDrafts: [],
+    consumedDrafts: [],
+    archivedDrafts: []
   };
 }

@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-04-09T13:25:41.823Z",
+  "items": [
+    {
+      "itemId": "faq_items-faq-draft-set:-common-questions-for-new-clients",
+      "sourceType": "content_draft",
+      "title": "FAQ Draft Set: Common Questions for New Clients",
+      "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\components\\HomePageClient.tsx",
+      "currentFaqState": "No FAQ section exists yet.",
+      "proposedFaqItems": [
+        {
+          "question": "What types of dogs do you work with?",
+          "answer": "We work with dogs needing strong obedience foundations, behavior structure, and goal-based training support."
+        },
+        {
+          "question": "How do I ask about available puppies?",
+          "answer": "Use the contact or inquiry form to ask about current and upcoming litters, timing, and fit."
+        },
+        {
+          "question": "How do I know which training option is right for my dog?",
+          "answer": "We recommend starting with your dog’s age, behavior, and goals so we can point you toward the best next step."
+        },
+        {
+          "question": "Do you work with family dogs as well as higher-drive dogs?",
+          "answer": "Yes. Training recommendations should match the dog’s temperament, home, and intended role."
+        }
+      ],
+      "diffPreview": "--- Current\nNo FAQ section exists yet.\n\n+++ Proposed\n1. What types of dogs do you work with?\nWe work with dogs needing strong obedience foundations, behavior structure, and goal-based training support.\n\n2. How do I ask about available puppies?\nUse the contact or inquiry form to ask about current and upcoming litters, timing, and fit.\n\n3. How do I know which training option is right for my dog?\nWe recommend starting with your dog’s age, behavior, and goals so we can point you toward the best next step.\n\n4. Do you work with family dogs as well as higher-drive dogs?\nYes. Training recommendations should match the dog’s temperament, home, and intended role.",
+      "status": "applied",
+      "message": "FAQ section was merged into the homepage component."
+    }
+  ]
+}

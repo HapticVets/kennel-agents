@@ -2,19 +2,181 @@
   {
     "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Page-title-is-missing.-draft-fix",
     "sourceType": "proposed_fix",
-    "status": "approved",
-    "updatedAt": "2026-04-08T22:31:55.028Z"
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
   },
   {
     "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.-draft-fix",
     "sourceType": "proposed_fix",
-    "status": "approved",
-    "updatedAt": "2026-04-08T22:31:56.791Z"
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "cta_section-cta-section:-start-your-dog-s-next-step",
+    "sourceType": "content_draft",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T01:44:46.703Z"
+  },
+  {
+    "itemId": "service_training_copy-service-section:-structured-training-with-clear-goals",
+    "sourceType": "content_draft",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T01:44:55.206Z"
+  },
+  {
+    "itemId": "puppy_listing_template-puppy-listing-template:-available-puppy-overview",
+    "sourceType": "content_draft",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T01:44:56.360Z"
+  },
+  {
+    "itemId": "announcement_post-announcement-post:-new-update-from-patriot-k9-kennel",
+    "sourceType": "content_draft",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T01:45:02.187Z"
+  },
+  {
+    "itemId": "faq_items-faq-draft-set:-common-questions-for-new-clients",
+    "sourceType": "content_draft",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
   },
   {
     "itemId": "homepage_hero-homepage-hero:-trusted-k9-training-and-quality-puppies",
     "sourceType": "content_draft",
-    "status": "pending",
-    "updatedAt": "2026-04-08T22:32:32.145Z"
+    "status": "rejected",
+    "updatedAt": "2026-04-09T17:53:28.498Z"
+  },
+  {
+    "itemId": "messaging-https://patriotk9kennel.com-homepage-messaging-appears-thin-or-lacks-a-clear-structure-at-the-top-of-the-page.",
+    "sourceType": "conversion_insight",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T17:53:28.517Z"
+  },
+  {
+    "itemId": "seo-meta-description-may-not-be-optimized-for-click-through",
+    "sourceType": "optimization_insight",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "cta-cta-language-is-present-but-can-be-made-more-outcome-focused",
+    "sourceType": "optimization_insight",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "hero_supporting_paragraph-baseline-hero-support-rewrite",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "seo-homepage-title-may-be-weak-for-search-visibility",
+    "sourceType": "optimization_insight",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "seo_title-homepage-title-may-be-weak-for-search-visibility",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "meta_description-meta-description-may-not-be-optimized-for-click-through",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "primary_cta_text-cta-language-is-present-but-can-be-made-more-outcome-focused",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "ux-application-flow-may-feel-heavy-before-enough-reassurance-is-established",
+    "sourceType": "optimization_insight",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "primary_cta_text-application-flow-may-feel-heavy-before-enough-reassurance-is-established",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "cta-https://patriotk9kennel.com-homepage-does-not-appear-to-present-a-strong-visible-call-to-action.",
+    "sourceType": "conversion_insight",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T19:56:17.943Z"
+  },
+  {
+    "itemId": "flow-https://patriotk9kennel.com-homepage-structure-may-be-too-shallow-to-guide-visitors-from-introduction-to-action.",
+    "sourceType": "conversion_insight",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T19:56:17.964Z"
+  },
+  {
+    "itemId": "trust-https://patriotk9kennel.com-the-sampled-pages-show-weak-visible-trust-signals-such-as-testimonials--credentials--or-experience-markers.",
+    "sourceType": "conversion_insight",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T19:56:17.985Z"
+  },
+  {
+    "itemId": "services-https://patriotk9kennel.com-service-categories-are-not-clearly-reinforced-across-the-sampled-pages.",
+    "sourceType": "conversion_insight",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T19:56:18.006Z"
+  },
+  {
+    "itemId": "drop_off-https://patriotk9kennel.com-some-internal-pages-may-create-drop-off-risk-because-they-lack-visible-next-step-prompts.",
+    "sourceType": "conversion_insight",
+    "status": "rejected",
+    "updatedAt": "2026-04-09T19:56:18.025Z"
+  },
+  {
+    "itemId": "seo_title-baseline-homepage-title-rewrite",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "meta_description-baseline-meta-description-rewrite",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "hero_headline-baseline-hero-headline-rewrite",
+    "sourceType": "section_rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "sourceType": "section_rewrite",
+    "itemId": "primary_cta_text-baseline-primary-cta-rewrite",
+    "status": "consumed",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "puppy-listing-petra-purple-collar-female-ana-adolf-reserved-1775769860265",
+    "sourceType": "puppy_listing",
+    "status": "approved",
+    "updatedAt": "2026-04-09T13:25:58.943Z"
+  },
+  {
+    "itemId": "puppy-listing-petra-female-adolf-and-ana-reserved-1775798026572",
+    "sourceType": "puppy_listing",
+    "status": "published",
+    "updatedAt": "2026-04-10T05:13:52.483Z"
+  },
+  {
+    "itemId": "puppy-listing-petra-female-adolf-ana-reserved-1775800349321",
+    "sourceType": "puppy_listing",
+    "status": "published",
+    "updatedAt": "2026-04-10T05:52:38.615Z"
   }
 ]

@@ -1,12 +1,12 @@
 [
   {
-    "itemId": "homepage_hero-homepage-hero:-trusted-k9-training-and-quality-puppies",
-    "sourceType": "content_draft",
-    "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\agent-applied\\content-drafts\\homepage_hero-homepage-hero:-trusted-k9-training-and-quality-puppies.md",
-    "changeSummary": "Stage an approved content draft for homepage_hero inside the local site repo.",
-    "patchPreview": "# Homepage Hero: Trusted K9 Training and Quality Puppies\n\n- Content Type: homepage_hero\n- Purpose: Give the homepage a strong opening message that explains the kennel clearly.\n- Target Audience: Families, dog owners, and prospective working-dog clients in the research stage.\n- CTA Suggestion: View training options\n\n## Draft Text\nPatriot K9 Kennel helps owners build confident, reliable dogs through practical training, structured care, and quality puppy programs. Whether you need obedience foundations, advanced training support, or information about available puppies, our goal is to guide you with clarity, experience, and dogs raised with purpose.\n\n## Notes\nUse this as top-of-page headline and supporting paragraph copy. Pair it with a strong kennel or training image.\n",
+    "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.-draft-fix",
+    "sourceType": "proposed_fix",
+    "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\agent-applied\\proposed-fixes\\missing_seo_metadata-https_patriotk9kennel_com-meta-description-is-missing_-draft-fix.md",
+    "changeSummary": "Stage an approved proposed fix as a local review document for seo.",
+    "patchPreview": "# Meta description is missing.\n\n- Severity: low\n- Page URL: https://patriotk9kennel.com\n- Category: seo\n\n## Recommended Fix\nAdd a concise meta description that explains the page content and encourages clicks from search results.\n\n## Before Preview\nBefore: the page has no meta description content for search engines or social previews.\n\n## After Preview\nAfter: the page includes a concise, unique meta description.\n\n## Implementation Notes\nUpdate the Next.js metadata export for the page and keep the description aligned with the visible content.\n",
     "status": "applied",
-    "updatedAt": "2026-04-08T22:01:05.107Z",
+    "updatedAt": "2026-04-08T22:32:11.717Z",
     "message": "Approved item was written to the local site codebase."
   },
   {
@@ -16,17 +16,27 @@
     "changeSummary": "Stage an approved proposed fix as a local review document for seo.",
     "patchPreview": "# Page title is missing.\n\n- Severity: medium\n- Page URL: https://patriotk9kennel.com\n- Category: seo\n\n## Recommended Fix\nAdd a descriptive page title that clearly reflects the page purpose and kennel offering.\n\n## Before Preview\nBefore: the page renders without a meaningful <title> tag.\n\n## After Preview\nAfter: the page includes a clear, unique title in the document metadata.\n\n## Implementation Notes\nUpdate the page metadata export or head configuration in the matching Next.js route.\n",
     "status": "applied",
-    "updatedAt": "2026-04-08T22:32:09.016Z",
+    "updatedAt": "2026-04-09T01:48:22.130Z",
     "message": "Approved item was written to the local site codebase."
   },
   {
-    "itemId": "missing_seo_metadata-https://patriotk9kennel.com-Meta-description-is-missing.-draft-fix",
-    "sourceType": "proposed_fix",
-    "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\agent-applied\\proposed-fixes\\missing_seo_metadata-https_patriotk9kennel_com-meta-description-is-missing_-draft-fix.md",
-    "changeSummary": "Stage an approved proposed fix as a local review document for seo.",
-    "patchPreview": "# Meta description is missing.\n\n- Severity: low\n- Page URL: https://patriotk9kennel.com\n- Category: seo\n\n## Recommended Fix\nAdd a concise meta description that explains the page content and encourages clicks from search results.\n\n## Before Preview\nBefore: the page has no meta description content for search engines or social previews.\n\n## After Preview\nAfter: the page includes a concise, unique meta description.\n\n## Implementation Notes\nUpdate the Next.js metadata export for the page and keep the description aligned with the visible content.\n",
+    "itemId": "faq_items-faq-draft-set:-common-questions-for-new-clients",
+    "sourceType": "content_draft",
+    "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\agent-applied\\content-drafts\\faq_items-faq-draft-set_-common-questions-for-new-clients.md",
+    "changeSummary": "Stage an approved content draft for faq_items inside the local site repo.",
+    "patchPreview": "# FAQ Draft Set: Common Questions for New Clients\n\n- Content Type: faq_items\n- Purpose: Answer common questions before visitors need to contact the kennel.\n- Target Audience: First-time visitors comparing options or trying to understand services.\n- CTA Suggestion: Ask a question\n\n## Draft Text\n1. What types of dogs do you work with?\nWe work with dogs needing strong obedience foundations, behavior structure, and goal-based training support.\n\n2. How do I ask about available puppies?\nUse the contact or inquiry form to ask about current and upcoming litters, timing, and fit.\n\n3. How do I know which training option is right for my dog?\nWe recommend starting with your dog’s age, behavior, and goals so we can point you toward the best next step.\n\n4. Do you work with family dogs as well as higher-drive dogs?\nYes. Training recommendations should match the dog’s temperament, home, and intended role.\n\n## Notes\nThis can be split into individual FAQ cards or accordion items later.\n",
     "status": "applied",
-    "updatedAt": "2026-04-08T22:32:11.717Z",
+    "updatedAt": "2026-04-09T12:34:38.969Z",
+    "message": "Approved item was written to the local site codebase."
+  },
+  {
+    "itemId": "homepage_hero-homepage-hero:-trusted-k9-training-and-quality-puppies",
+    "sourceType": "content_draft",
+    "targetFile": "C:\\Users\\jrees\\das-muller-website\\src\\agent-applied\\content-drafts\\homepage_hero-homepage-hero_-trusted-k9-training-and-quality-puppies.md",
+    "changeSummary": "Stage an approved content draft for homepage_hero inside the local site repo.",
+    "patchPreview": "# Homepage Hero: Trusted K9 Training and Quality Puppies\n\n- Content Type: homepage_hero\n- Purpose: Give the homepage a strong opening message that explains the kennel clearly.\n- Target Audience: Families, dog owners, and prospective working-dog clients in the research stage.\n- CTA Suggestion: View training options\n\n## Draft Text\nPatriot K9 Kennel helps owners build confident, reliable dogs through practical training, structured care, and quality puppy programs. Whether you need obedience foundations, advanced training support, or information about available puppies, our goal is to guide you with clarity, experience, and dogs raised with purpose.\n\n## Notes\nUse this as top-of-page headline and supporting paragraph copy. Pair it with a strong kennel or training image.\n",
+    "status": "applied",
+    "updatedAt": "2026-04-09T12:34:43.799Z",
     "message": "Approved item was written to the local site codebase."
   }
 ]

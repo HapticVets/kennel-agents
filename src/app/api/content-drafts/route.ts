@@ -9,9 +9,24 @@ export async function GET() {
 }
 
 export async function POST() {
-  // Content drafts are generated manually and saved for review in the admin dashboard.
-  const report = await runContentAgent();
-  const savedReport = await writeContentDraftReport(report);
+  // Generating content creates a fresh batch so the active draft queue does not silently recycle old suggestions.
+  const existingReport = await readContentDraftReport();
+  const batchId = `content-batch-${Date.now()}`;
+  const report = await runContentAgent(batchId);
+  const archivedDrafts = [
+    ...existingReport.archivedDrafts,
+    ...existingReport.drafts.map((draft) => ({
+      ...draft,
+      status: "archived" as const,
+      updatedAt: report.generatedAt
+    }))
+  ];
+  const savedReport = await writeContentDraftReport({
+    ...report,
+    publishedDrafts: existingReport.publishedDrafts,
+    consumedDrafts: existingReport.consumedDrafts,
+    archivedDrafts
+  });
 
   return NextResponse.json(savedReport);
 }

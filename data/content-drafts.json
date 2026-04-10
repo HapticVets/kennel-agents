@@ -1,8 +1,13 @@
 {
-  "generatedAt": "2026-04-08T21:24:48.916Z",
+  "generatedAt": "2026-04-09T21:24:54.834Z",
+  "activeBatchId": "content-batch-1775769894834",
   "drafts": [
     {
       "id": "homepage_hero-homepage-hero:-trusted-k9-training-and-quality-puppies",
+      "batchId": "content-batch-1775769894834",
+      "status": "draft",
+      "createdAt": "2026-04-09T21:24:54.834Z",
+      "updatedAt": "2026-04-09T21:24:54.834Z",
       "title": "Homepage Hero: Trusted K9 Training and Quality Puppies",
       "contentType": "homepage_hero",
       "purpose": "Give the homepage a strong opening message that explains the kennel clearly.",
@@ -13,6 +18,10 @@
     },
     {
       "id": "cta_section-cta-section:-start-your-dog-s-next-step",
+      "batchId": "content-batch-1775769894834",
+      "status": "draft",
+      "createdAt": "2026-04-09T21:24:54.834Z",
+      "updatedAt": "2026-04-09T21:24:54.834Z",
       "title": "CTA Section: Start Your Dog's Next Step",
       "contentType": "cta_section",
       "purpose": "Encourage visitors to take a clear next action after reading key sections.",
@@ -22,17 +31,11 @@
       "notes": "Place this after services or testimonials so it reinforces intent after the visitor has more context."
     },
     {
-      "id": "faq_items-faq-draft-set:-common-questions-for-new-clients",
-      "title": "FAQ Draft Set: Common Questions for New Clients",
-      "contentType": "faq_items",
-      "purpose": "Answer common questions before visitors need to contact the kennel.",
-      "targetAudience": "First-time visitors comparing options or trying to understand services.",
-      "draftText": "1. What types of dogs do you work with?\nWe work with dogs needing strong obedience foundations, behavior structure, and goal-based training support.\n\n2. How do I ask about available puppies?\nUse the contact or inquiry form to ask about current and upcoming litters, timing, and fit.\n\n3. How do I know which training option is right for my dog?\nWe recommend starting with your dog’s age, behavior, and goals so we can point you toward the best next step.\n\n4. Do you work with family dogs as well as higher-drive dogs?\nYes. Training recommendations should match the dog’s temperament, home, and intended role.",
-      "ctaSuggestion": "Ask a question",
-      "notes": "This can be split into individual FAQ cards or accordion items later."
-    },
-    {
       "id": "service_training_copy-service-section:-structured-training-with-clear-goals",
+      "batchId": "content-batch-1775769894834",
+      "status": "draft",
+      "createdAt": "2026-04-09T21:24:54.834Z",
+      "updatedAt": "2026-04-09T21:24:54.834Z",
       "title": "Service Section: Structured Training with Clear Goals",
       "contentType": "service_training_copy",
       "purpose": "Explain the kennel's training value in a focused service section.",
@@ -43,6 +46,10 @@
     },
     {
       "id": "puppy_listing_template-puppy-listing-template:-available-puppy-overview",
+      "batchId": "content-batch-1775769894834",
+      "status": "draft",
+      "createdAt": "2026-04-09T21:24:54.834Z",
+      "updatedAt": "2026-04-09T21:24:54.834Z",
       "title": "Puppy Listing Template: Available Puppy Overview",
       "contentType": "puppy_listing_template",
       "purpose": "Provide a reusable draft template for individual puppy listings.",
@@ -53,6 +60,10 @@
     },
     {
       "id": "announcement_post-announcement-post:-new-update-from-patriot-k9-kennel",
+      "batchId": "content-batch-1775769894834",
+      "status": "draft",
+      "createdAt": "2026-04-09T21:24:54.834Z",
+      "updatedAt": "2026-04-09T21:24:54.834Z",
       "title": "Announcement Post: New Update from Patriot K9 Kennel",
       "contentType": "announcement_post",
       "purpose": "Share timely news in a simple post format that can be edited for different updates.",
@@ -61,5 +72,23 @@
       "ctaSuggestion": "Contact the kennel",
       "notes": "Use this as a starter for news posts, litter announcements, seasonal reminders, or training program updates."
     }
-  ]
+  ],
+  "publishedDrafts": [],
+  "consumedDrafts": [
+    {
+      "id": "faq_items-faq-draft-set:-common-questions-for-new-clients",
+      "batchId": "content-batch-1775769894834",
+      "status": "consumed",
+      "createdAt": "2026-04-09T21:24:54.834Z",
+      "updatedAt": "2026-04-10T03:11:51.212Z",
+      "title": "FAQ Draft Set: Common Questions for New Clients",
+      "contentType": "faq_items",
+      "purpose": "Answer common questions before visitors need to contact the kennel.",
+      "targetAudience": "First-time visitors comparing options or trying to understand services.",
+      "draftText": "1. What types of dogs do you work with?\nWe work with dogs needing strong obedience foundations, behavior structure, and goal-based training support.\n\n2. How do I ask about available puppies?\nUse the contact or inquiry form to ask about current and upcoming litters, timing, and fit.\n\n3. How do I know which training option is right for my dog?\nWe recommend starting with your dog’s age, behavior, and goals so we can point you toward the best next step.\n\n4. Do you work with family dogs as well as higher-drive dogs?\nYes. Training recommendations should match the dog’s temperament, home, and intended role.",
+      "ctaSuggestion": "Ask a question",
+      "notes": "This can be split into individual FAQ cards or accordion items later."
+    }
+  ],
+  "archivedDrafts": []
 }
