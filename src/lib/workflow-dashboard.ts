@@ -1,4 +1,5 @@
 import { buildDeployStatusReport } from "@/lib/deploy-agent";
+import { TARGET_SITE_PATH } from "@/lib/config";
 import { buildOptimizationMergeReport } from "@/lib/optimization-merge-agent";
 import {
   readApprovalStates,
@@ -43,6 +44,53 @@ export interface WorkflowActionSummary {
 export interface WorkflowDashboardSummary {
   nextBestAction: WorkflowActionSummary;
   stages: WorkflowStageSummary[];
+}
+
+function buildHostedModeDeployReport() {
+  const message =
+    "Local SEO/content release tooling is unavailable in this hosted environment. Puppy listings remain available through the Supabase-backed dashboard.";
+
+  return {
+    generatedAt: new Date().toISOString(),
+    repoPath: TARGET_SITE_PATH,
+    currentBranch: "unavailable",
+    gitStatusSummary: message,
+    isClean: true,
+    isAheadOfRemote: false,
+    changedFiles: [],
+    suggestedCommitMessage: "",
+    commitStatus: {
+      status: "idle" as const,
+      message: "",
+      updatedAt: ""
+    },
+    pushStatus: {
+      status: "idle" as const,
+      message: "",
+      updatedAt: ""
+    },
+    publishStatus: {
+      status: "idle" as const,
+      message,
+      updatedAt: new Date().toISOString()
+    },
+    readyForVerification: false,
+    lastPublishResult: message
+  };
+}
+
+async function safeBuildDeployStatusReport() {
+  try {
+    return await buildDeployStatusReport();
+  } catch (error) {
+    if (process.env.KENNEL_HEALTH_DEBUG === "true") {
+      console.log("[WorkflowDeployStatusFallback]", {
+        reason: error instanceof Error ? error.message : "Unknown deploy status error."
+      });
+    }
+
+    return buildHostedModeDeployReport();
+  }
 }
 
 function countApprovals(
@@ -90,7 +138,7 @@ export async function buildWorkflowDashboard(): Promise<WorkflowDashboardSummary
     readApprovalStates(),
     readSectionRewriteReport(),
     readVerificationReport(),
-    buildDeployStatusReport()
+    safeBuildDeployStatusReport()
   ]);
 
   let optimizationMergeItems: OptimizationMergeItem[] = [];

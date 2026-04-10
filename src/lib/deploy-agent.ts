@@ -2,7 +2,7 @@ import { promisify } from "util";
 import { execFile } from "child_process";
 import { access } from "fs/promises";
 
-import { TARGET_SITE_PATH } from "@/lib/config";
+import { IS_HOSTED_MODE, TARGET_SITE_PATH } from "@/lib/config";
 import {
   markPublishedApprovalStates,
   readContentDraftReport,
@@ -35,6 +35,17 @@ async function runGit(args: string[]) {
 }
 
 async function isLocalReleaseRepoAvailable(): Promise<boolean> {
+  if (IS_HOSTED_MODE) {
+    if (process.env.KENNEL_HEALTH_DEBUG === "true") {
+      console.log("[DeployStatusHostedMode]", {
+        repoPath: TARGET_SITE_PATH,
+        reason: "VERCEL or KENNEL_HOSTED_MODE is enabled."
+      });
+    }
+
+    return false;
+  }
+
   try {
     await access(TARGET_SITE_PATH);
     await runGit(["rev-parse", "--is-inside-work-tree"]);
