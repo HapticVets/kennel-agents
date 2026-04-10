@@ -1,26 +1,28 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { getAdminSessionCookieName, verifyAdminSessionToken } from "@/lib/admin-auth";
+import {
+  getAdminSessionCookieName,
+  verifyAdminSessionToken
+} from "@/lib/admin-auth";
 import { IS_HOSTED_MODE } from "@/lib/config";
 
 function isProtectedPath(pathname: string): boolean {
-  // Only protect admin dashboard pages, except login
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     return true;
   }
 
-  // Protect all non-public API routes
-  if (pathname.startsWith("/api/")) {
-    return !(
-      pathname === "/api/admin/login" ||
-      pathname === "/api/admin/logout" ||
-      pathname.startsWith("/api/public/") ||
-      pathname.startsWith("/api/puppy-images/")
-    );
+  if (!pathname.startsWith("/api/")) {
+    return false;
   }
 
-  return false;
+  // Keep public inventory reads and local-dev image reads open
+  return (
+    pathname !== "/api/admin/login" &&
+    pathname !== "/api/admin/logout" &&
+    !pathname.startsWith("/api/public/") &&
+    !pathname.startsWith("/api/puppy-images/")
+  );
 }
 
 export async function middleware(request: NextRequest) {
@@ -30,23 +32,33 @@ export async function middleware(request: NextRequest) {
 
   const token = request.cookies.get(getAdminSessionCookieName())?.value;
 
-  const isValid = await verifyAdminSessionToken(token, { requireSupabaseSession: IS_HOSTED_MODE });
+  // Immediately redirect if no session token exists
+  if (!token) {
+    const loginUrl = new URL("/admin/login", request.url);
+    loginUrl.searchParams.set("next", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 
-  if (isValid) {
+  // Verify token for hosted mode (Vercel)
+  const valid = await verifyAdminSessionToken(token, {
+    requireSupabaseSession: IS_HOSTED_MODE
+  });
+
+  if (valid) {
     return NextResponse.next();
   }
 
-  // For protected API calls
+  // Unauthorized access to API
   if (request.nextUrl.pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  // For protected admin pages: redirect to login
+  // Redirect to login if session token invalid
   const loginUrl = new URL("/admin/login", request.url);
   loginUrl.searchParams.set("next", request.nextUrl.pathname);
   return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/:path*"],
+  matcher: ["/admin", "/admin/:path*", "/api/:path*"]
 };
