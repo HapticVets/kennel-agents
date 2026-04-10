@@ -1,5 +1,6 @@
 import { promisify } from "util";
 import { execFile } from "child_process";
+import { access } from "fs/promises";
 
 import { TARGET_SITE_PATH } from "@/lib/config";
 import {
@@ -16,6 +17,8 @@ import type {
 } from "@/types/health";
 
 const execFileAsync = promisify(execFile);
+const localReleaseUnavailableMessage =
+  "Local SEO/content release tooling is unavailable in this hosted environment. Puppy listings remain available through the Supabase-backed dashboard.";
 
 function emptyActionState(): DeployActionState {
   return {
@@ -29,6 +32,23 @@ async function runGit(args: string[]) {
   return execFileAsync("git", ["-C", TARGET_SITE_PATH, ...args], {
     windowsHide: true
   });
+}
+
+async function isLocalReleaseRepoAvailable(): Promise<boolean> {
+  try {
+    await access(TARGET_SITE_PATH);
+    await runGit(["rev-parse", "--is-inside-work-tree"]);
+    return true;
+  } catch (error) {
+    if (process.env.KENNEL_HEALTH_DEBUG === "true") {
+      console.log("[DeployStatusLocalUnavailable]", {
+        repoPath: TARGET_SITE_PATH,
+        reason: error instanceof Error ? error.message : "Unknown local repo access error."
+      });
+    }
+
+    return false;
+  }
 }
 
 function summarizeStatusCode(statusCode: string): string {
@@ -135,7 +155,27 @@ async function readRepoStatus() {
 }
 
 export async function buildDeployStatusReport(): Promise<DeployStatusReport> {
-  await runGit(["rev-parse", "--is-inside-work-tree"]);
+  if (!(await isLocalReleaseRepoAvailable())) {
+    return {
+      generatedAt: new Date().toISOString(),
+      repoPath: TARGET_SITE_PATH,
+      currentBranch: "unavailable",
+      gitStatusSummary: localReleaseUnavailableMessage,
+      isClean: true,
+      isAheadOfRemote: false,
+      changedFiles: [],
+      suggestedCommitMessage: "",
+      commitStatus: emptyActionState(),
+      pushStatus: emptyActionState(),
+      publishStatus: {
+        status: "idle",
+        message: localReleaseUnavailableMessage,
+        updatedAt: new Date().toISOString()
+      },
+      readyForVerification: false,
+      lastPublishResult: localReleaseUnavailableMessage
+    };
+  }
 
   const [repoStatus, actionState] = await Promise.all([
     readRepoStatus(),
@@ -172,6 +212,10 @@ export async function buildDeployStatusReport(): Promise<DeployStatusReport> {
 }
 
 export async function commitDeployChanges(message?: string): Promise<DeployStatusReport> {
+  if (!(await isLocalReleaseRepoAvailable())) {
+    throw new Error(localReleaseUnavailableMessage);
+  }
+
   const status = await buildDeployStatusReport();
 
   if (status.changedFiles.length === 0) {
@@ -223,6 +267,10 @@ export async function commitDeployChanges(message?: string): Promise<DeployStatu
 }
 
 export async function pushDeployChanges(): Promise<DeployStatusReport> {
+  if (!(await isLocalReleaseRepoAvailable())) {
+    throw new Error(localReleaseUnavailableMessage);
+  }
+
   const status = await buildDeployStatusReport();
 
   if (!status.isAheadOfRemote) {
@@ -264,6 +312,10 @@ export async function pushDeployChanges(): Promise<DeployStatusReport> {
 }
 
 export async function publishToLiveSite(): Promise<DeployStatusReport> {
+  if (!(await isLocalReleaseRepoAvailable())) {
+    throw new Error(localReleaseUnavailableMessage);
+  }
+
   const status = await buildDeployStatusReport();
 
   if (status.changedFiles.length === 0) {
