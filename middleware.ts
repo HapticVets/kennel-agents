@@ -5,6 +5,7 @@ import {
   getAdminSessionCookieName,
   verifyAdminSessionToken
 } from "@/lib/admin-auth";
+import { IS_HOSTED_MODE } from "@/lib/config";
 
 function isProtectedPath(pathname: string): boolean {
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
@@ -19,6 +20,7 @@ function isProtectedPath(pathname: string): boolean {
   // dashboard API is an admin action and should require the admin session.
   return (
     pathname !== "/api/admin/login" &&
+    pathname !== "/api/admin/logout" &&
     !pathname.startsWith("/api/public/") &&
     !pathname.startsWith("/api/puppy-images/")
   );
@@ -31,7 +33,7 @@ export async function middleware(request: NextRequest) {
 
   const token = request.cookies.get(getAdminSessionCookieName())?.value;
 
-  if (await verifyAdminSessionToken(token)) {
+  if (await verifyAdminSessionToken(token, { requireSupabaseSession: IS_HOSTED_MODE })) {
     return NextResponse.next();
   }
 
@@ -45,5 +47,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/:path*"]
+  matcher: ["/admin", "/admin/:path*", "/api/:path*"]
 };

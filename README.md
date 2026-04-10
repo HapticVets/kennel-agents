@@ -21,10 +21,12 @@ Next.js admin dashboard for kennel operations and agent-assisted site review.
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `SUPABASE_PUPPY_IMAGE_BUCKET=puppy-listings`
    - `ADMIN_SESSION_SECRET`
+   - `ADMIN_ALLOWED_EMAILS=you@example.com,partner@example.com`
    - `KENNEL_HEALTH_DEBUG=false`
 4. In Supabase Auth, create the admin user that should be allowed to log in.
    - When `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set, `/admin/login` uses Supabase Auth email/password.
    - `ADMIN_SESSION_SECRET` should be a long random string used only to sign the dashboard session cookie.
+   - `ADMIN_ALLOWED_EMAILS` is the comma-separated allowlist for you and your kennel partner; authenticated Supabase users outside this list are rejected.
 5. Confirm the Supabase tables and storage bucket exist:
    - `puppy_listings`
    - `puppy_listing_images`

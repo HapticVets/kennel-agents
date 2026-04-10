@@ -93,6 +93,11 @@ export function AdminNav({ currentPath }: { currentPath: string }) {
           </div>
         );
       })}
+      <form action="/api/admin/logout" method="post">
+        <button className="admin-nav-link" type="submit">
+          Logout
+        </button>
+      </form>
     </nav>
   );
 }

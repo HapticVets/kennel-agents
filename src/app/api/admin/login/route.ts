@@ -5,7 +5,8 @@ import {
   createAdminSessionToken,
   getAdminCredentials,
   getAdminSessionMaxAgeSeconds,
-  getAdminSessionCookieName
+  getAdminSessionCookieName,
+  isAdminIdentityAllowed
 } from "@/lib/admin-auth";
 import { getSupabaseConfig, isSupabaseAuthConfigured } from "@/lib/supabase-config";
 
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
   };
 
   let authenticatedUsername = body.username || "";
+  let supabaseAccessToken: string | undefined;
 
   if (isSupabaseAuthConfigured()) {
     const config = getSupabaseConfig();
@@ -33,7 +35,30 @@ export async function POST(request: Request) {
     }
 
     authenticatedUsername = data.user.email;
+
+    if (!isAdminIdentityAllowed(authenticatedUsername)) {
+      return NextResponse.json(
+        { error: "This Supabase user is not authorized for kennel admin access." },
+        { status: 403 }
+      );
+    }
+
+    if (!data.session?.access_token) {
+      return NextResponse.json(
+        { error: "Supabase did not return a valid admin session." },
+        { status: 401 }
+      );
+    }
+
+    supabaseAccessToken = data.session.access_token;
   } else {
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { error: "Supabase Auth must be configured for hosted admin access." },
+        { status: 500 }
+      );
+    }
+
     const credentials = getAdminCredentials();
 
     if (
@@ -48,7 +73,9 @@ export async function POST(request: Request) {
   }
 
   const response = NextResponse.json({ success: true });
-  response.cookies.set(getAdminSessionCookieName(), await createAdminSessionToken(authenticatedUsername), {
+  const sessionToken = await createAdminSessionToken(authenticatedUsername, supabaseAccessToken);
+
+  response.cookies.set(getAdminSessionCookieName(), sessionToken, {
     httpOnly: true,
     maxAge: getAdminSessionMaxAgeSeconds(),
     sameSite: "lax",
