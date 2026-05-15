@@ -64,10 +64,25 @@ export default function AdminDashboardPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [selectedImagePreviewUrl, setSelectedImagePreviewUrl] = useState("");
 
   useEffect(() => {
     void loadListings();
   }, []);
+
+  useEffect(() => {
+    if (!selectedImageFile) {
+      setSelectedImagePreviewUrl("");
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(selectedImageFile);
+    setSelectedImagePreviewUrl(previewUrl);
+
+    return () => {
+      URL.revokeObjectURL(previewUrl);
+    };
+  }, [selectedImageFile]);
 
   async function loadListings() {
     setLoading(true);
@@ -134,6 +149,7 @@ export default function AdminDashboardPage() {
       setStore(data);
       setFormState(emptyFormState);
       setSelectedImageFile(null);
+      setSelectedImagePreviewUrl("");
       setStatusMessage("Puppy listing saved.");
     } finally {
       setSubmitting(false);
@@ -332,19 +348,10 @@ export default function AdminDashboardPage() {
             <label className="approval-filter">
               Upload puppy image
               <input
-                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                accept="image/jpeg,image/png,image/webp"
                 className="text-input"
                 onChange={(event) => setSelectedImageFile(event.target.files?.[0] ?? null)}
                 type="file"
-              />
-            </label>
-            <label className="approval-filter">
-              Optional image URL or path
-              <input
-                className="text-input"
-                onChange={(event) => updateField("imagePath", event.target.value)}
-                type="text"
-                value={formState.imagePath}
               />
             </label>
             <label className="approval-filter">
@@ -370,10 +377,30 @@ export default function AdminDashboardPage() {
           </label>
 
           {selectedImageFile ? (
-            <p className="muted">
-              Selected image: {selectedImageFile.name}
-            </p>
+            <div className="fix-content">
+              <p className="muted">Selected image: {selectedImageFile.name}</p>
+              {selectedImagePreviewUrl ? (
+                <img
+                  alt="Selected puppy upload preview"
+                  className="image-preview"
+                  src={selectedImagePreviewUrl}
+                />
+              ) : null}
+            </div>
           ) : null}
+
+          <details className="secondary-action-details">
+            <summary>Use an existing image path instead</summary>
+            <label className="approval-filter">
+              Optional image URL or path
+              <input
+                className="text-input"
+                onChange={(event) => updateField("imagePath", event.target.value)}
+                type="text"
+                value={formState.imagePath}
+              />
+            </label>
+          </details>
 
           <button className="button" disabled={submitting} type="submit">
             {submitting ? "Saving..." : "Add puppy listing"}
