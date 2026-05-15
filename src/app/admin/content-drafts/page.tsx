@@ -76,6 +76,7 @@ export default function ContentDraftsPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [updatingKey, setUpdatingKey] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function loadPageData() {
@@ -105,12 +106,19 @@ export default function ContentDraftsPage() {
 
   async function generateDrafts() {
     setGenerating(true);
+    setErrorMessage("");
 
     try {
       // This route creates a fresh set of editable draft content ideas and saves them locally.
       const response = await fetch("/api/content-drafts", {
         method: "POST"
       });
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to generate content drafts.");
+        return;
+      }
+
       const data = (await response.json()) as ContentDraftReport;
       setReport(data);
       setApprovalStatuses((current) => {
@@ -132,6 +140,7 @@ export default function ContentDraftsPage() {
   async function updateApproval(itemId: string, status: ApprovalStatus) {
     const key = `${itemId}-${status}`;
     setUpdatingKey(key);
+    setErrorMessage("");
 
     try {
       const response = await fetch("/api/approvals", {
@@ -145,6 +154,12 @@ export default function ContentDraftsPage() {
           status
         })
       });
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to update approval status.");
+        return;
+      }
+
       const data = (await response.json()) as ApprovalQueueReport;
 
       setApprovalStatuses(
@@ -154,6 +169,34 @@ export default function ContentDraftsPage() {
             .map((item) => [item.itemId, item.status])
         )
       );
+    } finally {
+      setUpdatingKey("");
+    }
+  }
+
+  async function deleteDraft(itemId: string) {
+    const key = `${itemId}-delete`;
+    setUpdatingKey(key);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(`/api/content-drafts?itemId=${encodeURIComponent(itemId)}`, {
+        method: "DELETE"
+      });
+
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to delete the content draft.");
+        return;
+      }
+
+      const data = (await response.json()) as ContentDraftReport;
+      setReport(data);
+      setApprovalStatuses((current) => {
+        const next = { ...current };
+        delete next[itemId];
+        return next;
+      });
     } finally {
       setUpdatingKey("");
     }
@@ -233,6 +276,64 @@ export default function ContentDraftsPage() {
     }
   );
 
+  function renderDraftCard(draft: ContentDraft, showApprovalControls: boolean) {
+    return (
+      <article className="finding-card" key={draft.id}>
+        <div className="finding-topline">
+          <span className="badge badge-info">{contentTypeLabels[draft.contentType]}</span>
+          <span className={`badge badge-${draft.status}`}>{contentStatusLabels[draft.status]}</span>
+        </div>
+        {showApprovalControls ? (
+          <ApprovalControls
+            busy={updatingKey === `${draft.id}-approved` || updatingKey === `${draft.id}-rejected`}
+            onApprove={() => updateApproval(draft.id, "approved")}
+            onReject={() => updateApproval(draft.id, "rejected")}
+            status={approvalStatuses[draft.id] ?? "pending"}
+          />
+        ) : null}
+        <div className="card-actions">
+          <button
+            className="button approval-button approval-button-secondary"
+            disabled={updatingKey === `${draft.id}-delete`}
+            onClick={() => deleteDraft(draft.id)}
+            type="button"
+          >
+            {updatingKey === `${draft.id}-delete` ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+        <h3>{draft.title}</h3>
+        <div className="fix-content">
+          <div>
+            <strong>Purpose</strong>
+            <p className="muted">{draft.purpose}</p>
+          </div>
+          <div>
+            <strong>Target audience</strong>
+            <p className="muted">{draft.targetAudience}</p>
+          </div>
+          <div>
+            <strong>Draft text</strong>
+            <p className="muted draft-text">{draft.draftText}</p>
+          </div>
+          {draft.ctaSuggestion ? (
+            <div>
+              <strong>CTA suggestion</strong>
+              <p className="muted">{draft.ctaSuggestion}</p>
+            </div>
+          ) : null}
+          <div>
+            <strong>Notes</strong>
+            <p className="muted">{draft.notes}</p>
+          </div>
+          <div>
+            <strong>Batch</strong>
+            <p className="muted">{draft.batchId}</p>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <main className="shell">
       <section className="dashboard-header">
@@ -263,6 +364,7 @@ export default function ContentDraftsPage() {
         </div>
 
         {loading ? <p className="muted">Loading content drafts...</p> : null}
+        {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
         {!loading && activeDrafts.length === 0 ? (
           <p className="muted">
@@ -286,49 +388,7 @@ export default function ContentDraftsPage() {
                     <span className="group-count">{drafts.length}</span>
                   </div>
                   <div className="finding-list">
-                    {drafts.map((draft) => (
-                      <article className="finding-card" key={draft.id}>
-                        <div className="finding-topline">
-                          <span className="badge badge-info">{contentTypeLabels[draft.contentType]}</span>
-                          <span className={`badge badge-${draft.status}`}>{contentStatusLabels[draft.status]}</span>
-                        </div>
-                        <ApprovalControls
-                          busy={updatingKey === `${draft.id}-approved` || updatingKey === `${draft.id}-rejected`}
-                          onApprove={() => updateApproval(draft.id, "approved")}
-                          onReject={() => updateApproval(draft.id, "rejected")}
-                          status={approvalStatuses[draft.id] ?? "pending"}
-                        />
-                        <h3>{draft.title}</h3>
-                        <div className="fix-content">
-                          <div>
-                            <strong>Purpose</strong>
-                            <p className="muted">{draft.purpose}</p>
-                          </div>
-                          <div>
-                            <strong>Target audience</strong>
-                            <p className="muted">{draft.targetAudience}</p>
-                          </div>
-                          <div>
-                            <strong>Draft text</strong>
-                            <p className="muted draft-text">{draft.draftText}</p>
-                          </div>
-                          {draft.ctaSuggestion ? (
-                            <div>
-                              <strong>CTA suggestion</strong>
-                              <p className="muted">{draft.ctaSuggestion}</p>
-                            </div>
-                          ) : null}
-                          <div>
-                            <strong>Notes</strong>
-                            <p className="muted">{draft.notes}</p>
-                          </div>
-                          <div>
-                            <strong>Batch</strong>
-                            <p className="muted">{draft.batchId}</p>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
+                    {drafts.map((draft) => renderDraftCard(draft, true))}
                   </div>
                 </section>
               ))}
@@ -352,17 +412,7 @@ export default function ContentDraftsPage() {
                       <span className="group-count">{drafts.length}</span>
                     </div>
                     <div className="finding-list">
-                      {drafts.map((draft) => (
-                        <article className="finding-card" key={draft.id}>
-                          <div className="finding-topline">
-                            <span className="badge badge-info">{contentTypeLabels[draft.contentType]}</span>
-                            <span className={`badge badge-${draft.status}`}>{contentStatusLabels[draft.status]}</span>
-                          </div>
-                          <h3>{draft.title}</h3>
-                          <p className="muted">{draft.notes}</p>
-                          <p className="muted">Batch: {draft.batchId}</p>
-                        </article>
-                      ))}
+                      {drafts.map((draft) => renderDraftCard(draft, false))}
                     </div>
                   </section>
                 ))}
@@ -386,17 +436,7 @@ export default function ContentDraftsPage() {
                       <span className="group-count">{drafts.length}</span>
                     </div>
                     <div className="finding-list">
-                      {drafts.map((draft) => (
-                        <article className="finding-card" key={draft.id}>
-                          <div className="finding-topline">
-                            <span className="badge badge-info">{contentTypeLabels[draft.contentType]}</span>
-                            <span className={`badge badge-${draft.status}`}>{contentStatusLabels[draft.status]}</span>
-                          </div>
-                          <h3>{draft.title}</h3>
-                          <p className="muted">{draft.notes}</p>
-                          <p className="muted">Batch: {draft.batchId}</p>
-                        </article>
-                      ))}
+                      {drafts.map((draft) => renderDraftCard(draft, false))}
                     </div>
                   </section>
                 ))}
@@ -420,17 +460,7 @@ export default function ContentDraftsPage() {
                       <span className="group-count">{drafts.length}</span>
                     </div>
                     <div className="finding-list">
-                      {drafts.map((draft) => (
-                        <article className="finding-card" key={draft.id}>
-                          <div className="finding-topline">
-                            <span className="badge badge-info">{contentTypeLabels[draft.contentType]}</span>
-                            <span className={`badge badge-${draft.status}`}>{contentStatusLabels[draft.status]}</span>
-                          </div>
-                          <h3>{draft.title}</h3>
-                          <p className="muted">{draft.notes}</p>
-                          <p className="muted">Batch: {draft.batchId}</p>
-                        </article>
-                      ))}
+                      {drafts.map((draft) => renderDraftCard(draft, false))}
                     </div>
                   </section>
                 ))}

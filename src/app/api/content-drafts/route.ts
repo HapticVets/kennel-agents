@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { runContentAgent } from "@/lib/content-agent";
-import { readContentDraftReport, writeContentDraftReport } from "@/lib/storage";
+import {
+  deleteApprovalStateByItem,
+  deleteContentDraftById,
+  readContentDraftReport,
+  writeContentDraftReport
+} from "@/lib/storage";
 
 export async function GET() {
   const report = await readContentDraftReport();
@@ -29,4 +34,22 @@ export async function POST() {
   });
 
   return NextResponse.json(savedReport);
+}
+
+export async function DELETE(request: Request) {
+  const itemId = new URL(request.url).searchParams.get("itemId");
+
+  if (!itemId) {
+    return NextResponse.json({ error: "itemId is required." }, { status: 400 });
+  }
+
+  const nextReport = await deleteContentDraftById(itemId);
+
+  if (!nextReport) {
+    return NextResponse.json({ error: "Content draft not found." }, { status: 404 });
+  }
+
+  await deleteApprovalStateByItem(itemId, "content_draft");
+
+  return NextResponse.json(nextReport);
 }

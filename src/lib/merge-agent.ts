@@ -15,7 +15,6 @@ import type {
   MergeQueueItem,
   MergeQueueReport,
   MergeResult,
-  MergeStatus,
   ProposedFix
 } from "@/types/health";
 

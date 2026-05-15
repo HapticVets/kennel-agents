@@ -1,54 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import {
-  getAdminSessionCookieName,
-  verifyAdminSessionToken
-} from "@/lib/admin-auth";
-import { IS_HOSTED_MODE } from "@/lib/config";
-
-function isProtectedPath(pathname: string): boolean {
-  if (pathname === "/admin/login") {
-    return false;
-  }
-
-  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-    return true;
-  }
-
-  if (!pathname.startsWith("/api/")) {
-    return false;
-  }
-
-  return (
-    pathname !== "/api/admin/login" &&
-    pathname !== "/api/admin/logout" &&
-    !pathname.startsWith("/api/public/") &&
-    !pathname.startsWith("/api/puppy-images/")
-  );
-}
-
-export async function middleware(request: NextRequest) {
-  if (!isProtectedPath(request.nextUrl.pathname)) {
-    return NextResponse.next();
-  }
-
-  const token = request.cookies.get(getAdminSessionCookieName())?.value;
-  const isAuthenticated = await verifyAdminSessionToken(token, {
-    requireSupabaseSession: IS_HOSTED_MODE
-  });
-
-  if (isAuthenticated) {
-    return NextResponse.next();
-  }
-
-  if (request.nextUrl.pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  }
-
-  const loginUrl = new URL("/admin/login", request.url);
-  loginUrl.searchParams.set("next", request.nextUrl.pathname);
-  return NextResponse.redirect(loginUrl);
+export async function middleware(_request: NextRequest) {
+  // This simplified phase intentionally leaves the puppy listing admin public.
+  return NextResponse.next();
 }
 
 export const config = {

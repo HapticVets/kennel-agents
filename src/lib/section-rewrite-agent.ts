@@ -2,12 +2,10 @@ import * as cheerio from "cheerio";
 
 import { SITE_URL } from "@/lib/config";
 import {
-  readApplyResults,
   readApprovalStates,
   readOptimizationInsightReport
 } from "@/lib/storage";
 import type {
-  ApplyResult,
   OptimizationInsight,
   RewriteSectionName,
   SectionRewriteDraft,
@@ -95,8 +93,7 @@ function mapInsightToSection(insight: OptimizationInsight): RewriteSectionName |
 
 function isAppliedOrApprovedOptimizationInsight(
   insightId: string,
-  approvedInsightIds: Set<string>,
-  _applyResults: ApplyResult[]
+  approvedInsightIds: Set<string>
 ): boolean {
   // Optimization insights currently move through approval state rather than the apply-results file.
   return approvedInsightIds.has(insightId);
@@ -112,10 +109,9 @@ function getMatchedInsight(
 export async function runSectionRewriteAgent(): Promise<SectionRewriteReport> {
   // This agent converts applied approval decisions on optimization insights into concrete rewrite drafts.
   // If insight coverage is partial, it still generates a baseline rewrite set from the live homepage.
-  const [optimizationReport, approvals, applyResults, html] = await Promise.all([
+  const [optimizationReport, approvals, html] = await Promise.all([
     readOptimizationInsightReport(),
     readApprovalStates(),
-    readApplyResults(),
     fetchHomepageHtml()
   ]);
 
@@ -129,7 +125,7 @@ export async function runSectionRewriteAgent(): Promise<SectionRewriteReport> {
   );
 
   const approvedInsights = optimizationReport.insights.filter((insight) =>
-    isAppliedOrApprovedOptimizationInsight(insight.id, approvedInsightIds, applyResults)
+    isAppliedOrApprovedOptimizationInsight(insight.id, approvedInsightIds)
   );
 
   if (rewriteDebugEnabled) {

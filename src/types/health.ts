@@ -507,3 +507,27 @@ export interface PuppyPlacementReport {
   generatedAt: string;
   items: PuppyPlacementItem[];
 }
+
+export type PuppyListingStatus = "available" | "reserved" | "sold";
+
+export interface PuppyListingRecord {
+  id: string;
+  puppyName: string;
+  litterName: string;
+  sex: string;
+  color: string;
+  birthDate: string;
+  readyDate: string;
+  price: string;
+  status: PuppyListingStatus;
+  shortDescription: string;
+  imagePath: string;
+  goodDogLink?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PuppyListingsStore {
+  updatedAt: string;
+  listings: PuppyListingRecord[];
+}

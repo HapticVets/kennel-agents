@@ -13,7 +13,6 @@ import {
   readApprovalStates,
   readContentDraftReport,
   readHealthReportStore,
-  readOptimizationMergeReport,
   readOptimizationInsightReport,
   readSectionRewriteReport,
   readVerificationReport,

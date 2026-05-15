@@ -532,7 +532,7 @@ export async function runKennelHealthAgent(): Promise<HealthReport> {
   for (const page of scannedPages) {
     const emptyImageSources = page.imageUrls.filter((imageUrl) => !imageUrl.trim());
 
-    for (const _ of emptyImageSources) {
+    for (const emptyImageSource of emptyImageSources) {
       findings.push(
         buildFinding(
           "missing_image",
@@ -542,6 +542,8 @@ export async function runKennelHealthAgent(): Promise<HealthReport> {
           checkedAt
         )
       );
+
+      void emptyImageSource;
     }
 
     const internalImages = page.imageUrls

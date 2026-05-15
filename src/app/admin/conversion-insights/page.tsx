@@ -27,6 +27,8 @@ export default function ConversionInsightsPage() {
   const [report, setReport] = useState<ConversionInsightReport>(emptyReport);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [deletingItemId, setDeletingItemId] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function loadReport() {
@@ -46,16 +48,48 @@ export default function ConversionInsightsPage() {
 
   async function generateInsights() {
     setGenerating(true);
+    setErrorMessage("");
 
     try {
       // This route runs a lightweight heuristic review of the current site structure.
       const response = await fetch("/api/conversion-insights", {
         method: "POST"
       });
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to generate conversion insights.");
+        return;
+      }
+
       const data = (await response.json()) as ConversionInsightReport;
       setReport(data);
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function deleteInsight(itemId: string) {
+    setDeletingItemId(itemId);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(
+        `/api/conversion-insights?itemId=${encodeURIComponent(itemId)}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to delete the conversion insight.");
+        return;
+      }
+
+      const data = (await response.json()) as ConversionInsightReport;
+      setReport(data);
+    } finally {
+      setDeletingItemId("");
     }
   }
 
@@ -106,6 +140,7 @@ export default function ConversionInsightsPage() {
         </div>
 
         {loading ? <p className="muted">Loading conversion insights...</p> : null}
+        {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
         {!loading && report.insights.length === 0 ? (
           <p className="muted">
@@ -134,6 +169,16 @@ export default function ConversionInsightsPage() {
                         <div className="finding-topline">
                           <span className={`badge badge-${insight.severity}`}>{insight.severity}</span>
                           <span className="finding-type">{categoryLabels[insight.category]}</span>
+                        </div>
+                        <div className="card-actions">
+                          <button
+                            className="button approval-button approval-button-secondary"
+                            disabled={deletingItemId === insight.id}
+                            onClick={() => deleteInsight(insight.id)}
+                            type="button"
+                          >
+                            {deletingItemId === insight.id ? "Deleting..." : "Delete"}
+                          </button>
                         </div>
                         <h3>{insight.issueOrObservation}</h3>
                         <p className="finding-url">{insight.pageUrl}</p>

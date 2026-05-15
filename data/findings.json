@@ -1,10 +1,15 @@
 {
   "latest": {
-    "checkedAt": "2026-04-09T20:06:03.255Z",
+    "checkedAt": "2026-05-15T13:02:32.588Z",
     "baseUrl": "https://www.patriotk9kennel.com",
     "findings": []
   },
   "history": [
+    {
+      "checkedAt": "2026-05-15T13:02:32.588Z",
+      "baseUrl": "https://www.patriotk9kennel.com",
+      "findings": []
+    },
     {
       "checkedAt": "2026-04-09T20:06:03.255Z",
       "baseUrl": "https://www.patriotk9kennel.com",
@@ -90,22 +95,6 @@
           "message": "Homepage is unavailable.",
           "details": "Received HTTP 403.",
           "checkedAt": "2026-04-08T23:57:54.607Z"
-        }
-      ]
-    },
-    {
-      "checkedAt": "2026-04-08T23:53:09.073Z",
-      "baseUrl": "https://patriotk9kennel.com",
-      "findings": [
-        {
-          "id": "homepage_availability-https://patriotk9kennel.com-Homepage-is-unavailable.",
-          "severity": "high",
-          "category": "availability",
-          "type": "homepage_availability",
-          "pageUrl": "https://patriotk9kennel.com",
-          "message": "Homepage is unavailable.",
-          "details": "Received HTTP 403.",
-          "checkedAt": "2026-04-08T23:53:09.073Z"
         }
       ]
     }

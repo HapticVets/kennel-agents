@@ -33,7 +33,6 @@ const dataDirectory = path.join(process.cwd(), "data");
 const findingsFilePath = path.join(dataDirectory, "findings.json");
 const proposedFixesFilePath = path.join(dataDirectory, "proposed-fixes.json");
 const contentDraftsFilePath = path.join(dataDirectory, "content-drafts.json");
-const puppyListingsFilePath = path.join(dataDirectory, "puppy-listings.json");
 const conversionInsightsFilePath = path.join(dataDirectory, "conversion-insights.json");
 const approvalsFilePath = path.join(dataDirectory, "approvals.json");
 const applyResultsFilePath = path.join(dataDirectory, "apply-results.json");
@@ -957,6 +956,26 @@ function normalizeStore(data: unknown): HealthReportStore {
   return emptyStore();
 }
 
+export async function deleteHealthReportByCheckedAt(
+  checkedAt: string
+): Promise<HealthReportStore | null> {
+  const currentStore = await readHealthReportStore();
+  const nextHistory = currentStore.history.filter((report) => report.checkedAt !== checkedAt);
+
+  if (nextHistory.length === currentStore.history.length) {
+    return null;
+  }
+
+  const nextStore: HealthReportStore = {
+    latest: nextHistory[0] ?? emptyReport(),
+    history: nextHistory
+  };
+
+  await mkdir(dataDirectory, { recursive: true });
+  await writeFile(findingsFilePath, JSON.stringify(nextStore, null, 2), "utf8");
+  return nextStore;
+}
+
 export async function readHealthReportStore(): Promise<HealthReportStore> {
   try {
     const fileContents = await readFile(findingsFilePath, "utf8");
@@ -998,6 +1017,22 @@ export async function writeProposedFixReport(
   return report;
 }
 
+export async function deleteProposedFixById(
+  itemId: string
+): Promise<ProposedFixReport | null> {
+  const report = await readProposedFixReport();
+  const nextReport: ProposedFixReport = {
+    ...report,
+    fixes: report.fixes.filter((fix) => fix.id !== itemId)
+  };
+
+  if (nextReport.fixes.length === report.fixes.length) {
+    return null;
+  }
+
+  return writeProposedFixReport(nextReport);
+}
+
 export async function readContentDraftReport(): Promise<ContentDraftReport> {
   const rawReport = await readRawContentDraftReport();
   const syncedReport = await syncContentDraftReport(rawReport);
@@ -1019,6 +1054,36 @@ export async function writeContentDraftReport(
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(contentDraftsFilePath, JSON.stringify(normalizedReport, null, 2), "utf8");
   return normalizedReport;
+}
+
+export async function deleteContentDraftById(
+  itemId: string
+): Promise<ContentDraftReport | null> {
+  const report = await readRawContentDraftReport();
+  const nextReport = normalizeContentDraftReport({
+    ...report,
+    drafts: report.drafts.filter((draft) => draft.id !== itemId),
+    publishedDrafts: report.publishedDrafts.filter((draft) => draft.id !== itemId),
+    consumedDrafts: report.consumedDrafts.filter((draft) => draft.id !== itemId),
+    archivedDrafts: report.archivedDrafts.filter((draft) => draft.id !== itemId)
+  });
+
+  const currentCount =
+    report.drafts.length +
+    report.publishedDrafts.length +
+    report.consumedDrafts.length +
+    report.archivedDrafts.length;
+  const nextCount =
+    nextReport.drafts.length +
+    nextReport.publishedDrafts.length +
+    nextReport.consumedDrafts.length +
+    nextReport.archivedDrafts.length;
+
+  if (nextCount === currentCount) {
+    return null;
+  }
+
+  return writeContentDraftReport(nextReport);
 }
 
 export async function readPuppyListingReport(): Promise<PuppyListingReport> {
@@ -1057,9 +1122,23 @@ export async function writeConversionInsightReport(
   return report;
 }
 
-export async function readApprovalStates(): Promise<ApprovalState[]> {
-  const rawStates = await readRawApprovalStates();
+export async function deleteConversionInsightById(
+  itemId: string
+): Promise<ConversionInsightReport | null> {
+  const report = await readConversionInsightReport();
+  const nextReport: ConversionInsightReport = {
+    ...report,
+    insights: report.insights.filter((insight) => insight.id !== itemId)
+  };
 
+  if (nextReport.insights.length === report.insights.length) {
+    return null;
+  }
+
+  return writeConversionInsightReport(nextReport);
+}
+
+export async function readApprovalStates(): Promise<ApprovalState[]> {
   const deployState = await readDeployActionState();
   await applyConsumedSourceTransition(
     deployState.publishStatus.updatedAt || new Date().toISOString()
@@ -1075,6 +1154,22 @@ export async function writeApprovalStates(
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(approvalsFilePath, JSON.stringify(states, null, 2), "utf8");
   return states;
+}
+
+export async function deleteApprovalStateByItem(
+  itemId: string,
+  sourceType: ApprovalSourceType
+): Promise<ApprovalState[] | null> {
+  const states = await readRawApprovalStates();
+  const nextStates = states.filter(
+    (state) => !(state.itemId === itemId && state.sourceType === sourceType)
+  );
+
+  if (nextStates.length === states.length) {
+    return null;
+  }
+
+  return writeApprovalStates(nextStates);
 }
 
 export async function markPublishedApprovalStates(): Promise<ApprovalState[]> {

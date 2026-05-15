@@ -32,6 +32,7 @@ export default function ProposedFixesPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [updatingKey, setUpdatingKey] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function loadPageData() {
@@ -61,12 +62,19 @@ export default function ProposedFixesPage() {
 
   async function generateDrafts() {
     setGenerating(true);
+    setErrorMessage("");
 
     try {
       // This route reads the latest health findings and writes a new set of draft fixes.
       const response = await fetch("/api/proposed-fixes", {
         method: "POST"
       });
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to generate proposed fixes.");
+        return;
+      }
+
       const data = (await response.json()) as ProposedFixReport;
       setReport(data);
       setApprovalStatuses((current) => {
@@ -88,6 +96,7 @@ export default function ProposedFixesPage() {
   async function updateApproval(itemId: string, status: ApprovalStatus) {
     const key = `${itemId}-${status}`;
     setUpdatingKey(key);
+    setErrorMessage("");
 
     try {
       const response = await fetch("/api/approvals", {
@@ -101,6 +110,12 @@ export default function ProposedFixesPage() {
           status
         })
       });
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to update approval status.");
+        return;
+      }
+
       const data = (await response.json()) as ApprovalQueueReport;
 
       setApprovalStatuses(
@@ -110,6 +125,34 @@ export default function ProposedFixesPage() {
             .map((item) => [item.itemId, item.status])
         )
       );
+    } finally {
+      setUpdatingKey("");
+    }
+  }
+
+  async function deleteFix(itemId: string) {
+    const key = `${itemId}-delete`;
+    setUpdatingKey(key);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(`/api/proposed-fixes?itemId=${encodeURIComponent(itemId)}`, {
+        method: "DELETE"
+      });
+
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to delete the proposed fix.");
+        return;
+      }
+
+      const data = (await response.json()) as ProposedFixReport;
+      setReport(data);
+      setApprovalStatuses((current) => {
+        const next = { ...current };
+        delete next[itemId];
+        return next;
+      });
     } finally {
       setUpdatingKey("");
     }
@@ -167,6 +210,7 @@ export default function ProposedFixesPage() {
         </div>
 
         {loading ? <p className="muted">Loading proposed fixes...</p> : null}
+        {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
         {!loading && activeFixes.length === 0 ? (
           <p className="muted">
@@ -197,6 +241,16 @@ export default function ProposedFixesPage() {
                           onReject={() => updateApproval(fix.id, "rejected")}
                           status={approvalStatuses[fix.id] ?? "pending"}
                         />
+                        <div className="card-actions">
+                          <button
+                            className="button approval-button approval-button-secondary"
+                            disabled={updatingKey === `${fix.id}-delete`}
+                            onClick={() => deleteFix(fix.id)}
+                            type="button"
+                          >
+                            {updatingKey === `${fix.id}-delete` ? "Deleting..." : "Delete"}
+                          </button>
+                        </div>
                         <h3>{fix.issueTitle}</h3>
                         <p className="finding-url">{fix.pageUrl}</p>
                         <div className="fix-content">

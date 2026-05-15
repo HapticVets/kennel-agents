@@ -4,8 +4,19 @@ import { getSupabaseConfig } from "@/lib/supabase-config";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { email, password } = body;
+    const body = (await req.json()) as {
+      email?: string;
+      password?: string;
+    };
+    const email = body.email?.trim();
+    const password = body.password;
+
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: "Email and password are required." },
+        { status: 400 }
+      );
+    }
 
     const config = getSupabaseConfig();
     if (!config.url || !config.anonKey) {
@@ -57,7 +68,12 @@ export async function POST(req: Request) {
       maxAge: 60 * 60 * 12 // 12 hours
     });
     return res;
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Unknown error" }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error"
+      },
+      { status: 500 }
+    );
   }
 }

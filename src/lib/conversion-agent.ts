@@ -128,8 +128,6 @@ async function collectPages(): Promise<PageSnapshot[]> {
         /contact|book|learn more|view|start|get started|inquire|call|request/i.test(label)
       );
 
-    const lowerText = text.toLowerCase();
-
     snapshots.push({
       url,
       title: $("title").first().text().trim(),

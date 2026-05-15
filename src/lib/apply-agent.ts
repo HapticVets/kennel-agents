@@ -13,7 +13,6 @@ import type {
   ApplyQueueItem,
   ApplyQueueReport,
   ApplyResult,
-  ApplyStatus,
   ApprovalState,
   ContentDraft,
   ProposedFix

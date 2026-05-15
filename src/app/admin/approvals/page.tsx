@@ -42,6 +42,7 @@ export default function ApprovalsPage() {
   const [sourceFilter, setSourceFilter] = useState<ApprovalSourceType | "all">("all");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [expandedItemId, setExpandedItemId] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function loadQueue() {
@@ -64,6 +65,7 @@ export default function ApprovalsPage() {
   ) {
     const key = `${sourceType}-${itemId}-${status}`;
     setUpdatingKey(key);
+    setErrorMessage("");
 
     try {
       // This page still writes into the shared approval queue, so local review actions and other pages stay in sync.
@@ -79,8 +81,43 @@ export default function ApprovalsPage() {
         })
       });
 
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to update the approval record.");
+        return;
+      }
+
       const data = (await response.json()) as ApprovalQueueReport;
       setReport(data);
+    } finally {
+      setUpdatingKey("");
+    }
+  }
+
+  async function clearApprovalRecord(itemId: string, sourceType: ApprovalSourceType) {
+    const key = `${sourceType}-${itemId}-delete`;
+    setUpdatingKey(key);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(
+        `/api/approvals?itemId=${encodeURIComponent(itemId)}&sourceType=${encodeURIComponent(sourceType)}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to clear the approval record.");
+        return;
+      }
+
+      const data = (await response.json()) as ApprovalQueueReport;
+      setReport(data);
+      setSelectedIds((current) =>
+        current.filter((entry) => entry !== `${sourceType}:${itemId}`)
+      );
     } finally {
       setUpdatingKey("");
     }
@@ -203,6 +240,7 @@ export default function ApprovalsPage() {
         </div>
 
         {loading ? <p className="muted">Loading approval queue...</p> : null}
+        {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
         {!loading && report.items.length > 0 ? (
           <>
@@ -385,6 +423,18 @@ export default function ApprovalsPage() {
                                   {updatingKey === `${item.sourceType}-${item.itemId}-rejected`
                                     ? "Saving..."
                                     : "Reject"}
+                                </button>
+                                <button
+                                  className="button approval-button approval-button-secondary"
+                                  disabled={updatingKey === `${item.sourceType}-${item.itemId}-delete`}
+                                  onClick={() =>
+                                    clearApprovalRecord(item.itemId, item.sourceType)
+                                  }
+                                  type="button"
+                                >
+                                  {updatingKey === `${item.sourceType}-${item.itemId}-delete`
+                                    ? "Clearing..."
+                                    : "Clear status"}
                                 </button>
                               </div>
                             </td>

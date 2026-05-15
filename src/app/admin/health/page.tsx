@@ -40,6 +40,8 @@ export default function HealthDashboardPage() {
   const [store, setStore] = useState<HealthReportStore>(emptyStore);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
+  const [deletingCheckedAt, setDeletingCheckedAt] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function loadFindings() {
@@ -57,16 +59,45 @@ export default function HealthDashboardPage() {
 
   async function runAgent() {
     setRunning(true);
+    setErrorMessage("");
 
     try {
       const response = await fetch("/api/health", {
         method: "POST"
       });
 
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to run the health scan.");
+        return;
+      }
+
       const data = (await response.json()) as HealthReportStore;
       setStore(data);
     } finally {
       setRunning(false);
+    }
+  }
+
+  async function deleteScan(checkedAt: string) {
+    setDeletingCheckedAt(checkedAt);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(`/api/health?checkedAt=${encodeURIComponent(checkedAt)}`, {
+        method: "DELETE"
+      });
+
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        setErrorMessage(data.error || "Unable to delete the saved scan.");
+        return;
+      }
+
+      const data = (await response.json()) as HealthReportStore;
+      setStore(data);
+    } finally {
+      setDeletingCheckedAt("");
     }
   }
 
@@ -131,6 +162,7 @@ export default function HealthDashboardPage() {
           </div>
 
           {loading ? <p className="muted">Loading findings...</p> : null}
+          {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
           {!loading && findings.length === 0 ? (
             <p className="muted">No issues detected. Site is healthy.</p>
@@ -186,8 +218,20 @@ export default function HealthDashboardPage() {
 
                 return (
                   <article className="history-item" key={scan.checkedAt}>
-                    <strong>{new Date(scan.checkedAt).toLocaleString()}</strong>
-                    <span className="muted">{scan.findings.length} findings</span>
+                    <div className="history-item-topline">
+                      <div>
+                        <strong>{new Date(scan.checkedAt).toLocaleString()}</strong>
+                        <span className="muted">{scan.findings.length} findings</span>
+                      </div>
+                      <button
+                        className="button button-small approval-button-secondary"
+                        disabled={deletingCheckedAt === scan.checkedAt}
+                        onClick={() => deleteScan(scan.checkedAt)}
+                        type="button"
+                      >
+                        {deletingCheckedAt === scan.checkedAt ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
                     <div className="history-severities">
                       <span className="badge badge-high">{highCount} high</span>
                       <span className="badge badge-medium">{mediumCount} medium</span>
