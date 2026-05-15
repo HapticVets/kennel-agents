@@ -63,6 +63,7 @@ export default function AdminDashboardPage() {
   const [deletingId, setDeletingId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     void loadListings();
@@ -100,12 +101,26 @@ export default function AdminDashboardPage() {
     setStatusMessage("");
 
     try {
+      const payload = new FormData();
+      payload.set("puppyName", formState.puppyName);
+      payload.set("litterName", formState.litterName);
+      payload.set("sex", formState.sex);
+      payload.set("color", formState.color);
+      payload.set("birthDate", formState.birthDate);
+      payload.set("readyDate", formState.readyDate);
+      payload.set("price", formState.price);
+      payload.set("status", formState.status);
+      payload.set("shortDescription", formState.shortDescription);
+      payload.set("imagePath", formState.imagePath);
+      payload.set("goodDogLink", formState.goodDogLink);
+
+      if (selectedImageFile) {
+        payload.set("imageFile", selectedImageFile);
+      }
+
       const response = await fetch("/api/puppy-listings", {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
-        body: JSON.stringify(formState)
+        body: payload
       });
       const data = (await response.json()) as PuppyListingsStore | { error?: string };
 
@@ -118,6 +133,7 @@ export default function AdminDashboardPage() {
 
       setStore(data);
       setFormState(emptyFormState);
+      setSelectedImageFile(null);
       setStatusMessage("Puppy listing saved.");
     } finally {
       setSubmitting(false);
@@ -314,7 +330,16 @@ export default function AdminDashboardPage() {
               </select>
             </label>
             <label className="approval-filter">
-              Image URL or path
+              Upload puppy image
+              <input
+                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                className="text-input"
+                onChange={(event) => setSelectedImageFile(event.target.files?.[0] ?? null)}
+                type="file"
+              />
+            </label>
+            <label className="approval-filter">
+              Optional image URL or path
               <input
                 className="text-input"
                 onChange={(event) => updateField("imagePath", event.target.value)}
@@ -343,6 +368,12 @@ export default function AdminDashboardPage() {
               value={formState.shortDescription}
             />
           </label>
+
+          {selectedImageFile ? (
+            <p className="muted">
+              Selected image: {selectedImageFile.name}
+            </p>
+          ) : null}
 
           <button className="button" disabled={submitting} type="submit">
             {submitting ? "Saving..." : "Add puppy listing"}

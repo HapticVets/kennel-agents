@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 import {
   createLocalPuppyListing,
   deleteLocalPuppyListing,
-  readLocalPuppyListingsStore
+  readLocalPuppyListingsStore,
+  saveLocalPuppyImage,
+  validateLocalPuppyImage
 } from "@/lib/local-puppy-listings";
 import type { PuppyListingRecord, PuppyListingStatus } from "@/types/health";
 
@@ -46,12 +48,39 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as Partial<PuppyListingRequestBody>;
+  const formData = await request.formData();
+  const fileEntry = formData.get("imageFile");
+  const imageFile = fileEntry instanceof File && fileEntry.size > 0 ? fileEntry : null;
+  const body: Partial<PuppyListingRequestBody> = {
+    puppyName: String(formData.get("puppyName") ?? "").trim(),
+    litterName: String(formData.get("litterName") ?? "").trim(),
+    sex: String(formData.get("sex") ?? "").trim(),
+    color: String(formData.get("color") ?? "").trim(),
+    birthDate: String(formData.get("birthDate") ?? "").trim(),
+    readyDate: String(formData.get("readyDate") ?? "").trim(),
+    price: String(formData.get("price") ?? "").trim(),
+    status: normalizeStatus(String(formData.get("status") ?? "")),
+    shortDescription: String(formData.get("shortDescription") ?? "").trim(),
+    imagePath: String(formData.get("imagePath") ?? "").trim(),
+    goodDogLink: String(formData.get("goodDogLink") ?? "").trim()
+  };
   const validationError = validateRequestBody(body);
 
   if (validationError) {
     return NextResponse.json({ error: validationError }, { status: 400 });
   }
+
+  if (imageFile) {
+    const fileValidationError = validateLocalPuppyImage(imageFile);
+
+    if (fileValidationError) {
+      return NextResponse.json({ error: fileValidationError }, { status: 400 });
+    }
+  }
+
+  const savedImagePath = imageFile
+    ? await saveLocalPuppyImage(body.puppyName?.trim() ?? "puppy", imageFile)
+    : body.imagePath?.trim() ?? "";
 
   const store = await createLocalPuppyListing({
     puppyName: body.puppyName?.trim() ?? "",
@@ -63,7 +92,7 @@ export async function POST(request: Request) {
     price: body.price?.trim() ?? "",
     status: normalizeStatus(body.status),
     shortDescription: body.shortDescription?.trim() ?? "",
-    imagePath: body.imagePath?.trim() ?? "",
+    imagePath: savedImagePath,
     goodDogLink: body.goodDogLink?.trim() ?? ""
   });
 

@@ -9,6 +9,12 @@ import type {
 
 const dataDirectory = path.join(process.cwd(), "data");
 const puppyListingsFilePath = path.join(dataDirectory, "puppy-listings.json");
+const puppyImagesDirectory = path.join(process.cwd(), "public", "images", "puppies");
+const supportedImageTypes = new Map<string, string>([
+  ["image/jpeg", ".jpg"],
+  ["image/png", ".png"],
+  ["image/webp", ".webp"]
+]);
 
 function emptyStore(): PuppyListingsStore {
   return {
@@ -90,6 +96,43 @@ async function writeStore(store: PuppyListingsStore): Promise<PuppyListingsStore
   await mkdir(dataDirectory, { recursive: true });
   await writeFile(puppyListingsFilePath, JSON.stringify(store, null, 2), "utf8");
   return store;
+}
+
+function sanitizeFileNameSegment(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "puppy";
+}
+
+export function validateLocalPuppyImage(file: File): string | null {
+  if (!supportedImageTypes.has(file.type)) {
+    return "Unsupported image type. Use jpg, jpeg, png, or webp.";
+  }
+
+  return null;
+}
+
+export async function saveLocalPuppyImage(
+  puppyName: string,
+  file: File
+): Promise<string> {
+  const validationError = validateLocalPuppyImage(file);
+
+  if (validationError) {
+    throw new Error(validationError);
+  }
+
+  const extension = supportedImageTypes.get(file.type) ?? ".jpg";
+  const fileName = `${sanitizeFileNameSegment(puppyName)}-${Date.now()}${extension}`;
+  const filePath = path.join(puppyImagesDirectory, fileName);
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  await mkdir(puppyImagesDirectory, { recursive: true });
+  await writeFile(filePath, buffer);
+
+  return `/images/puppies/${fileName}`;
 }
 
 export async function readLocalPuppyListingsStore(): Promise<PuppyListingsStore> {
