@@ -86,6 +86,7 @@ export default function AdminDashboardPage() {
 
   async function loadListings() {
     setLoading(true);
+    setErrorMessage("");
 
     try {
       const response = await fetch("/api/puppy-listings", { cache: "no-store" });
@@ -146,10 +147,10 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      setStore(data);
       setFormState(emptyFormState);
       setSelectedImageFile(null);
       setSelectedImagePreviewUrl("");
+      await loadListings();
       setStatusMessage("Puppy listing saved.");
     } finally {
       setSubmitting(false);
@@ -158,7 +159,7 @@ export default function AdminDashboardPage() {
 
   async function deleteListing(itemId: string) {
     const confirmed = window.confirm(
-      "Delete this puppy listing permanently from the local JSON file?"
+      "Delete this puppy listing permanently from Supabase?"
     );
 
     if (!confirmed) {
@@ -182,7 +183,7 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      setStore(data);
+      await loadListings();
       setStatusMessage("Puppy listing deleted.");
     } finally {
       setDeletingId("");
@@ -208,21 +209,47 @@ export default function AdminDashboardPage() {
         </div>
         <h3>{listing.puppyName}</h3>
         <div className="fix-content">
-          <p className="muted">
-            {listing.sex || "Sex not set"} • {listing.color || "Color not set"} •{" "}
-            {listing.price || "Price not set"}
-          </p>
-          <p className="muted">
-            Birth date: {listing.birthDate || "Not set"} • Ready date:{" "}
-            {listing.readyDate || "Not set"}
-          </p>
-          <p className="muted">{listing.shortDescription}</p>
+          <div>
+            <strong>Litter name</strong>
+            <p className="muted">{listing.litterName || "Not set"}</p>
+          </div>
+          <div>
+            <strong>Sex</strong>
+            <p className="muted">{listing.sex || "Not set"}</p>
+          </div>
+          <div>
+            <strong>Color</strong>
+            <p className="muted">{listing.color || "Not set"}</p>
+          </div>
+          <div>
+            <strong>Birth date</strong>
+            <p className="muted">{listing.birthDate || "Not set"}</p>
+          </div>
+          <div>
+            <strong>Ready date</strong>
+            <p className="muted">{listing.readyDate || "Not set"}</p>
+          </div>
+          <div>
+            <strong>Price</strong>
+            <p className="muted">{listing.price || "Not set"}</p>
+          </div>
+          <div>
+            <strong>Status</strong>
+            <p className="muted">{statusLabels[listing.status]}</p>
+          </div>
+          <div>
+            <strong>Description</strong>
+            <p className="muted">{listing.shortDescription}</p>
+          </div>
           {listing.imagePath ? (
-            <img
-              alt={listing.puppyName}
-              className="image-preview"
-              src={listing.imagePath}
-            />
+            <div>
+              <strong>Uploaded image</strong>
+              <img
+                alt={listing.puppyName}
+                className="image-preview"
+                src={listing.imagePath}
+              />
+            </div>
           ) : null}
           {listing.goodDogLink ? (
             <p>
@@ -258,7 +285,7 @@ export default function AdminDashboardPage() {
           <div>
             <h2>Add puppy listing</h2>
             <p className="muted">
-              This form writes directly to the local JSON file used by the admin.
+              This form writes directly to the shared Supabase puppy listing source.
             </p>
           </div>
         </div>
@@ -424,7 +451,7 @@ export default function AdminDashboardPage() {
 
         {!loading && store.listings.length === 0 ? (
           <p className="muted">
-            No puppy listings exist yet. Add one with the form above.
+            No puppy listings saved yet.
           </p>
         ) : null}
 

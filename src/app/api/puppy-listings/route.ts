@@ -9,6 +9,8 @@ import {
 } from "@/lib/local-puppy-listings";
 import type { PuppyListingRecord, PuppyListingStatus } from "@/types/health";
 
+export const dynamic = "force-dynamic";
+
 type PuppyListingRequestBody = Omit<
   PuppyListingRecord,
   "id" | "createdAt" | "updatedAt"
@@ -43,8 +45,21 @@ function validateRequestBody(body: Partial<PuppyListingRequestBody>): string | n
 }
 
 export async function GET() {
-  const store = await readLocalPuppyListingsStore();
-  return NextResponse.json(store);
+  try {
+    const store = await readLocalPuppyListingsStore();
+    return NextResponse.json(store, {
+      headers: {
+        "cache-control": "no-store"
+      }
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unable to load puppy listings."
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -78,25 +93,38 @@ export async function POST(request: Request) {
     }
   }
 
-  const savedImagePath = imageFile
-    ? await saveLocalPuppyImage(body.puppyName?.trim() ?? "puppy", imageFile)
-    : body.imagePath?.trim() ?? "";
+  try {
+    const savedImagePath = imageFile
+      ? await saveLocalPuppyImage(body.puppyName?.trim() ?? "puppy", imageFile)
+      : body.imagePath?.trim() ?? "";
 
-  const store = await createLocalPuppyListing({
-    puppyName: body.puppyName?.trim() ?? "",
-    litterName: body.litterName?.trim() ?? "",
-    sex: body.sex?.trim() ?? "",
-    color: body.color?.trim() ?? "",
-    birthDate: body.birthDate?.trim() ?? "",
-    readyDate: body.readyDate?.trim() ?? "",
-    price: body.price?.trim() ?? "",
-    status: normalizeStatus(body.status),
-    shortDescription: body.shortDescription?.trim() ?? "",
-    imagePath: savedImagePath,
-    goodDogLink: body.goodDogLink?.trim() ?? ""
-  });
+    const store = await createLocalPuppyListing({
+      puppyName: body.puppyName?.trim() ?? "",
+      litterName: body.litterName?.trim() ?? "",
+      sex: body.sex?.trim() ?? "",
+      color: body.color?.trim() ?? "",
+      birthDate: body.birthDate?.trim() ?? "",
+      readyDate: body.readyDate?.trim() ?? "",
+      price: body.price?.trim() ?? "",
+      status: normalizeStatus(body.status),
+      shortDescription: body.shortDescription?.trim() ?? "",
+      imagePath: savedImagePath,
+      goodDogLink: body.goodDogLink?.trim() ?? ""
+    });
 
-  return NextResponse.json(store);
+    return NextResponse.json(store, {
+      headers: {
+        "cache-control": "no-store"
+      }
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unable to save the puppy listing."
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(request: Request) {
@@ -106,11 +134,24 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "itemId is required." }, { status: 400 });
   }
 
-  const store = await deleteLocalPuppyListing(itemId);
+  try {
+    const store = await deleteLocalPuppyListing(itemId);
 
-  if (!store) {
-    return NextResponse.json({ error: "Puppy listing not found." }, { status: 404 });
+    if (!store) {
+      return NextResponse.json({ error: "Puppy listing not found." }, { status: 404 });
+    }
+
+    return NextResponse.json(store, {
+      headers: {
+        "cache-control": "no-store"
+      }
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unable to delete the puppy listing."
+      },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(store);
 }
